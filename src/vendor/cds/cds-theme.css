@@ -1,0 +1,789 @@
+/* ==========================================================================
+   Claude Design System (CDS) - Complete Production Theme & Motion Stylesheet
+   逆向溯源：基于 REA (Reverse Engineer Anything) v6.5.0 对 macOS 生产包
+   /Applications/Claude.app (@ant/desktop v2.37337.1) 全量 AST 与运行时解构提取。
+   ========================================================================== */
+
+:root {
+  /* 0. 桌面端光学缩放与基准变量 */
+  --cds-rem-scale: calc(16 / 17); /* 桌面端光学微调系数 ≈ 0.94117647 */
+  --brand: #c6613f;               /* 官方桌面端主品牌色 */
+  --cds-clay: #d97757;            /* 经典陶土橙（微标与呼吸灯回退） */
+  --cds-clay-hover: #cc5a36;      /* 陶土色悬停加深态 */
+  --cds-clay-light: #fbf3ef;      /* 陶土极浅背景色 */
+
+  /* 1. Anthropic 官方 35 阶高精灰度标尺 (Grayscale Ramp) */
+  --cds-gray-0: #fff;
+  --cds-gray-10: #fcfcfb;
+  --cds-gray-20: #f9f9f7;
+  --cds-gray-30: #f6f6f4;
+  --cds-gray-40: #f3f3f0;
+  --cds-gray-50: #f0efec;
+  --cds-gray-60: #edece8;
+  --cds-gray-70: #eae9e4;
+  --cds-gray-80: #e7e6e1;
+  --cds-gray-90: #e4e3dd;
+  --cds-gray-100: #e1e0d9;
+  --cds-gray-150: #d2d1c7;
+  --cds-gray-200: #c3c2b7;
+  --cds-gray-250: #b4b3a8;
+  --cds-gray-300: #a5a49a;
+  --cds-gray-350: #97958d;
+  --cds-gray-400: #898781;
+  --cds-gray-450: #7b7974;
+  --cds-gray-500: #6d6b67;
+  --cds-gray-550: #5f5e5a;
+  --cds-gray-600: #52514e;
+  --cds-gray-650: #454442;
+  --cds-gray-700: #383835;
+  --cds-gray-750: #2c2c2a;
+  --cds-gray-800: #20201f;
+  --cds-gray-810: #1e1e1d;
+  --cds-gray-820: #1c1c1b;
+  --cds-gray-830: #1a1a19;
+  --cds-gray-840: #181817;
+  --cds-gray-850: #151515;
+  --cds-gray-860: #131313;
+  --cds-gray-870: #111111;
+  --cds-gray-880: #0f0f0f;
+  --cds-gray-890: #0d0d0d;
+  --cds-gray-900: #0b0b0b;
+
+  /* 2. Anthropic 官方 35 阶橙色/陶土色标尺 (Orange/Clay Ramp) */
+  --cds-orange-0: #fff;
+  --cds-orange-10: #fefbfa;
+  --cds-orange-20: #fdf7f5;
+  --cds-orange-30: #fcf4f0;
+  --cds-orange-40: #faf0ec;
+  --cds-orange-50: #f9ece7;
+  --cds-orange-60: #f8e9e2;
+  --cds-orange-70: #f7e5dd;
+  --cds-orange-80: #f7e1d7;
+  --cds-orange-90: #f7dcd1;
+  --cds-orange-100: #f7d8cb;
+  --cds-orange-150: #f3c5b2;
+  --cds-orange-200: #f4ae94;
+  --cds-orange-250: #f09978;
+  --cds-orange-300: #ec835a;
+  --cds-orange-350: #eb6834;
+  --cds-orange-400: #d95926;
+  --cds-orange-450: #c25124;
+  --cds-orange-500: #ae461c;
+  --cds-orange-550: #993d19;
+  --cds-orange-600: #863311;
+  --cds-orange-650: #712b0f;
+  --cds-orange-700: #5d230b;
+  --cds-orange-750: #4b1b08;
+  --cds-orange-800: #371407;
+  --cds-orange-810: #341307;
+  --cds-orange-820: #301106;
+  --cds-orange-830: #2d1006;
+  --cds-orange-840: #290f06;
+  --cds-orange-850: #240e07;
+  --cds-orange-860: #1f0e08;
+  --cds-orange-870: #1a0e09;
+  --cds-orange-880: #150d0a;
+  --cds-orange-890: #100c0b;
+  --cds-orange-900: #0b0b0b;
+
+  /* 3. 真实表面色彩阶梯 (Surfaces - Light Mode) */
+  --cds-surface-0: var(--cds-gray-20); /* #f9f9f7 侧边栏/底层 Canvas 基底 */
+  --cds-surface-1: var(--cds-gray-10); /* #fcfcfb 页面主聊天画布背景 */
+  --cds-surface-2: var(--cds-gray-0);  /* #ffffff 消息卡片表面 */
+  --cds-surface-3: var(--cds-gray-0);  /* #ffffff 输入框容器/高层浮层 */
+  --cds-surface-popover: var(--cds-gray-0); /* #ffffff 悬浮 Popover 表面 */
+
+  /* 4. Alpha 透明度与边框色系 */
+  --cds-alpha-0: hsla(0, 0%, 8%, 0);
+  --cds-alpha-1: hsla(0, 0%, 8%, 0.05); /* Ghost hover, skeleton */
+  --cds-alpha-2: hsla(0, 0%, 8%, 0.10); /* Standard border */
+  --cds-alpha-3: hsla(0, 0%, 8%, 0.20); /* Border strong */
+  --cds-alpha-4: hsla(0, 0%, 8%, 0.35); /* Heavy divider */
+
+  --cds-border: var(--cds-alpha-2);
+  --cds-border-strong: var(--cds-alpha-3);
+  --cds-ring-hairline: 1px;
+
+  /* 5. 双环浮动气泡架构 (Dual-Ring Architecture - 浅色模式) */
+  --cds-ring-inner: 0px;
+  --cds-ring-outer: 1px;
+  --cds-ring-color: var(--cds-border);
+
+  /* 6. 阴影系统 (Elevation Shadows) */
+  --cds-shadow-color: rgba(0, 0, 0, 0.08);
+  --cds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 2px 8px 0 var(--cds-shadow-color);
+  --cds-shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.05), 0 6px 16px 0 var(--cds-shadow-color);
+  --cds-shadow-lg: 0 4px 8px 0 rgba(0, 0, 0, 0.06), 0 12px 28px -2px var(--cds-shadow-color);
+  --cds-shadow-popover: inset 0 0 0 var(--cds-ring-inner) var(--cds-ring-color), 
+                        0 0 0 var(--cds-ring-outer) var(--cds-ring-color), 
+                        0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  --cds-panel-shadow: 0 0 0 1px var(--cds-border), var(--cds-shadow-sm);
+  --cds-panel-shadow-hover: 0 0 0 1px var(--cds-border-strong), 0 4px 16px -2px rgba(0, 0, 0, 0.09);
+
+  /* 7. 核心输入终端双环阴影 (Composer Shadow) */
+  --cds-shadow-composer: 0 4px 20px rgba(0, 0, 0, 0.035), inset 0 0 0 1px var(--cds-border);
+  --cds-shadow-composer-hover: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 0 0 1px var(--cds-border-strong);
+  --cds-shadow-composer-focus: 0 4px 24px rgba(0, 0, 0, 0.08), inset 0 0 0 1px var(--cds-border-strong), 0 0 0 1px var(--cds-border-strong);
+
+  /* 8. 三层焦点微光环与拖拽微光 */
+  --cds-focus-shadow: inset 0 0 0 1px var(--cds-surface-1), 0 0 0 1.5px var(--cds-clay), 0 0 6px 1px rgba(217, 119, 87, 0.25);
+  --cds-shadow-drop-glow: inset 0 0 24px -2px rgba(217, 119, 87, 0.20), inset 0 0 0 2px var(--cds-clay);
+
+  /* 9. 交互填充与文本色阶 */
+  --cds-fill-ghost-hover: var(--cds-alpha-1);
+  --cds-fill-ghost-selected: var(--cds-alpha-2);
+  --cds-fill-secondary: var(--cds-alpha-2);
+  --cds-fill-secondary-hover: rgba(21, 21, 21, 0.14);
+
+  --cds-text-primary: #151515;
+  --cds-text-secondary: #525252;
+  --cds-text-muted: #8a8a8a;
+  --cds-bg-tint-blue: #f0f4f8;
+  --cds-segmented-track: rgba(0, 0, 0, 0.06);
+  --cds-segmented-thumb: #ffffff;
+
+  /* 10. 精密圆角阶梯与自适应嵌套公式 */
+  --radius-xs: .125rem;  /* 2px */
+  --radius-sm: .25rem;   /* 4px */
+  --radius-md: .375rem;  /* 6px */
+  --radius-lg: .5rem;    /* 8px */
+  --cds-panel-radius: 10px;
+  --radius-xl: .75rem;   /* 12px */
+  --radius-2xl: 1rem;    /* 16px */
+  --radius-3xl: 1.5rem;  /* 24px */
+  --cds-radius-composer: 20px;
+  --df-radius-pill: 999px;
+  --radius: var(--cds-radius, 8px);
+  --radius-card: calc(var(--cds-radius, 8px) + calc(.25rem * var(--cds-rem-scale, 1)));
+
+  /* 会话气泡与版心计量核心令牌 (REA v6.5.0 取证自 frame-shell-chrome-CAw-tYzh.js) */
+  --cds-bg-user-message: var(--cds-bg-neutral);
+  --cds-bg-user-message-personal: var(--cds-bg-tint-blue);
+  --cds-text-user-message-personal: var(--cds-text-tint-blue, #193c5f);
+  --cds-message-bubble-radius: calc(var(--cds-radius, 8px) + calc(.25rem * var(--cds-rem-scale, 1)));
+  --cds-message-bubble-pad-x: var(--cds-pad-lg, 16px);
+  --cds-message-bubble-pad-y: var(--cds-pad-md, 12px);
+  --cds-message-bubble-measure: 85%;
+  --cds-message-bubble-stack-gap: 4px;
+  --cds-message-bubble-radius-meeting: 4px;
+  --cds-message-bubble-radius-head: var(--cds-message-bubble-radius);
+  --cds-message-bubble-radius-foot: var(--cds-message-bubble-radius);
+  --cds-message-bubble-join-gap: min(8px, var(--cds-message-bubble-pad-y));
+  --cds-assistant-message-text-inset: 4px;
+  --cds-assistant-message-text-stop: clamp(0px, (100% - 384px) * .175, 56px);
+
+  /* 纵向节奏与排版律动 (REA v6.5.0 取证自 shared-styles-Bl9zqrv-.css) */
+  --chat-gutter: 32px;
+  --chat-body: calc(.875rem * var(--cds-rem-scale, 1));
+  --chat-leading: 1.42857;
+  --chat-turn-gap: calc(var(--chat-body) * var(--chat-leading) * .75);
+  --chat-item-gap: calc(var(--chat-body) * var(--chat-leading) * .5);
+
+  /* 11. 滚动时间轴驱动遮罩 (Scroll Fade 28px) */
+  --cds-scroll-fade-size: 28px;
+  --cds-scroll-fade-top: 0px;
+  --cds-scroll-fade-bottom: 0px;
+  --cds-scroll-fade-left: 0px;
+  --cds-scroll-fade-right: 0px;
+  --cds-scroll-fade-strip-color: var(--cds-surface-1);
+
+  /* 12. 真实物理动效贝塞尔曲线全集 (REA v6.5.0 取证) */
+  --cds-ease-swift: cubic-bezier(.16, 1, .3, 1);       /* 幽灵按钮/高频微交互 */
+  --cds-ease-expand: cubic-bezier(.19, 1, .22, 1);     /* Grid 0fr->1fr 展开防抖 */
+  --cds-ease-enter: cubic-bezier(.22, 1, .36, 1);      /* 消息块入场消融 */
+  --cds-ease-out: cubic-bezier(.165, .84, .44, 1);     /* 标准平滑出场 */
+  --cds-ease-snap: cubic-bezier(.32, .72, 0, 1);       /* 磁吸快速对齐 */
+  --cds-ease-overshoot: cubic-bezier(.34, 1.3, .64, 1);/* 经典机械果冻过冲 (+30%) */
+  --cds-ease-pop: cubic-bezier(.34, 1.56, .64, 1);     /* 弹窗/重图标回弹 (+56%) */
+  --cds-ease-pulse: cubic-bezier(.4, 0, .2, 1);        /* 思考三点跳动呼吸脉冲 */
+  --cds-ease-rise: cubic-bezier(.3, .7, .4, 1);        /* 状态条平滑抬升 */
+  --cds-ease-fall: cubic-bezier(0, 0, .2, 1);          /* 状态条平滑下落 */
+  --cds-btn-spring: linear(0, .2459, .6526, .9468, 1.0764, 1.0915, 1.0585, 1.0219, .9993, .9914, .9921, .9957, .9988, 1.0004, 1); /* 15阶物理弹簧回弹 */
+
+  /* 13. 字体栈与 CJK 真实回退链 */
+  --font-cjk-sans-sc: "PingFang SC";
+  --font-cjk-sans-tc: "PingFang TC";
+  --font-cjk-sans-jp: "Hiragino Sans";
+  --font-cjk-sans-kr: "Apple SD Gothic Neo";
+  --font-cjk-sans-fallback: var(--font-cjk-sans-sc), var(--font-cjk-sans-tc), var(--font-cjk-sans-jp), var(--font-cjk-sans-kr);
+  --font-sans-fallbacks: system-ui, "Segoe UI", Roboto, Helvetica, Arial, var(--font-cjk-sans-fallback), sans-serif;
+  --font-anthropic-sans: "anthropic-sans", var(--font-sans-fallbacks);
+  --font-anthropic-serif: "anthropic-serif", ui-serif, Georgia, "Times New Roman", var(--font-cjk-sans-fallback), serif;
+  --font-anthropic-mono: "anthropic-mono", ui-monospace, monospace;
+
+  /* 14. 语义化组件别名映射 (Component Semantic Aliases) */
+  --cds-bg-surface: var(--cds-surface-2);
+  --cds-bg-surface-elevated: var(--cds-surface-3);
+  --cds-bg-primary: var(--cds-surface-0);
+  --cds-bg-secondary: var(--cds-surface-1);
+  --cds-bg-hover: var(--cds-fill-ghost-hover);
+  --cds-bg-selected: var(--cds-fill-ghost-selected);
+  --cds-border-subtle: var(--cds-alpha-2);
+  --cds-border-accent: var(--cds-clay);
+  --cds-fill-brand: var(--brand);
+  --cds-fill-brand-hover: var(--cds-clay-hover);
+  --cds-fill-brand-subtle: var(--cds-clay-light);
+  --cds-fill-danger: #ef4444;
+  --cds-text-accent: var(--cds-clay);
+}
+
+/* 高分屏视网膜物理发丝细线补偿 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx), (resolution >= 2x) {
+  :root {
+    --cds-ring-hairline: 0.5px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 3dppx), (resolution >= 3x) {
+  :root {
+    --cds-ring-hairline: calc(1px / 3);
+  }
+}
+
+/* ==========================================================================
+   Dark Mode 暗色模式变量重载 (REA v6.5.0 严苛等距色阶)
+   ========================================================================== */
+[data-mode="dark"], .dark {
+  --cds-surface-0: var(--cds-gray-900); /* #0b0b0b */
+  --cds-surface-1: var(--cds-gray-850); /* #151515 */
+  --cds-surface-2: var(--cds-gray-830); /* #1a1a19 */
+  --cds-surface-3: var(--cds-gray-800); /* #20201f */
+  --cds-surface-popover: var(--cds-gray-750); /* #2c2c2a */
+  --cds-scroll-fade-strip-color: var(--cds-surface-1);
+
+  --cds-clay: #d97757;
+  --cds-clay-hover: #e08264;
+
+  --cds-alpha-0: hsla(0, 0%, 100%, 0);
+  --cds-alpha-1: hsla(0, 0%, 100%, 0.05);
+  --cds-alpha-2: hsla(0, 0%, 100%, 0.09);
+  --cds-alpha-3: hsla(0, 0%, 100%, 0.18);
+  --cds-alpha-4: hsla(0, 0%, 100%, 0.30);
+
+  --cds-border: var(--cds-alpha-2);
+  --cds-border-strong: var(--cds-alpha-3);
+
+  /* 双环暗色模式：内高光 1px + 外轮廓 0px (模拟倒角物理顶光) */
+  --cds-ring-inner: 1px;
+  --cds-ring-outer: 0px;
+  --cds-ring-color: rgba(255, 255, 255, 0.10);
+
+  --cds-shadow-color: rgba(0, 0, 0, 0.40);
+  --cds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 2px 8px 0 var(--cds-shadow-color);
+  --cds-shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 6px 16px 0 var(--cds-shadow-color);
+  --cds-shadow-lg: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 16px 36px -2px var(--cds-shadow-color);
+  --cds-shadow-popover: inset 0 0 0 1px rgba(255, 255, 255, 0.10), 
+                        0 8px 28px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.45);
+
+  --cds-panel-shadow: 0 0 0 1px var(--cds-border), var(--cds-shadow-sm);
+  --cds-panel-shadow-hover: 0 0 0 1px var(--cds-border-strong), 0 6px 20px rgba(0, 0, 0, 0.6);
+
+  --cds-shadow-composer: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 1px var(--cds-border);
+  --cds-shadow-composer-hover: 0 4px 24px rgba(0, 0, 0, 0.55), inset 0 0 0 1px var(--cds-border-strong);
+  --cds-shadow-composer-focus: 0 4px 24px rgba(0, 0, 0, 0.65), inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.22);
+
+  --cds-focus-shadow: inset 0 0 0 1px var(--cds-surface-1), 0 0 0 1.5px var(--cds-clay), 0 0 8px 2px rgba(217, 119, 87, 0.35);
+  --cds-shadow-drop-glow: inset 0 0 24px -2px rgba(217, 119, 87, 0.30), inset 0 0 0 2px var(--cds-clay);
+
+  --cds-fill-ghost-hover: var(--cds-alpha-1);
+  --cds-fill-ghost-selected: var(--cds-alpha-2);
+  --cds-fill-secondary: var(--cds-alpha-2);
+  --cds-fill-secondary-hover: rgba(255, 255, 255, 0.14);
+
+  --cds-text-primary: #f5f5f5;
+  --cds-text-secondary: #a3a3a3;
+  --cds-text-muted: #666666;
+  --cds-bg-tint-blue: rgba(255, 255, 255, 0.06);
+  --cds-segmented-track: rgba(255, 255, 255, 0.08);
+  --cds-segmented-thumb: #2c2c2a;
+
+  /* 语义化组件别名暗色重载 */
+  --cds-bg-surface: var(--cds-surface-2);
+  --cds-bg-surface-elevated: var(--cds-surface-3);
+  --cds-bg-primary: var(--cds-surface-0);
+  --cds-bg-secondary: var(--cds-surface-1);
+  --cds-bg-hover: var(--cds-fill-ghost-hover);
+  --cds-bg-selected: var(--cds-fill-ghost-selected);
+  --cds-border-subtle: var(--cds-alpha-2);
+  --cds-border-accent: var(--cds-clay);
+  --cds-fill-brand: var(--brand);
+  --cds-fill-brand-hover: var(--cds-clay-hover);
+  --cds-fill-brand-subtle: rgba(217, 119, 87, 0.15);
+  --cds-fill-danger: #f87171;
+  --cds-text-accent: var(--cds-clay);
+}
+
+/* ==========================================================================
+   光学字重补偿 & 基线校准 (Optical Ergonomics)
+   ========================================================================== */
+
+/* 暗色模式视网膜光渗字重逆补偿 */
+.dark .font-medium, [data-mode="dark"] .font-medium,
+.dark [data-optical-compensate], [data-mode="dark"] [data-optical-compensate] {
+  font-variation-settings: "wght" 465;
+}
+.dark .font-semibold, [data-mode="dark"] .font-semibold {
+  font-variation-settings: "wght" 560;
+}
+.dark .font-bold, [data-mode="dark"] .font-bold {
+  font-variation-settings: "wght" 660;
+}
+
+/* 行内图标光学负偏置 */
+.align-neg-125 { vertical-align: -0.125em; }
+.align-neg-075 { vertical-align: -0.075em; }
+.align-neg-1px  { vertical-align: -1px; }
+
+/* 文本换行与防截断约束 */
+.text-balance-native { text-wrap: balance; }
+.text-pretty-native  { text-wrap: pretty; }
+.overflow-wrap-anywhere { overflow-wrap: anywhere; word-break: normal; }
+
+/* 等宽数字锁定 */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ==========================================================================
+   生产核心关键帧动画 (CSS Keyframes)
+   ========================================================================== */
+
+/* 1. 字符流式晕染消解 */
+@keyframes _grapheme-reveal_1plog_1 {
+  0%   { opacity: 0; filter: blur(6px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+/* 2. 思考中三点波浪跳跃 (REA 取证：1.9s infinite cubic-bezier(.4, 0, .2, 1)) */
+@keyframes timeline-quiet-dot {
+  0%, 8%   { opacity: 0; transform: translateY(2px); }
+  22%      { opacity: 1; transform: translateY(-2.5px); }
+  36%, 70% { opacity: 1; transform: translateY(0); }
+  90%, 100%{ opacity: 0; transform: translateY(0); }
+}
+
+/* 3. 网格高度平滑展开 (Grid 0fr -> 1fr 消除高度抖动) */
+@keyframes timeline-expand {
+  0%   { opacity: 0; grid-template-rows: 0fr; }
+  100% { opacity: 1; grid-template-rows: 1fr; }
+}
+
+/* 4. 状态行平滑抬升入场 */
+@keyframes timeline-status-rise {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* 5. 状态行平滑下落退场 */
+@keyframes timeline-status-fall {
+  0%   { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+/* 6. 消息气泡微弹进入 */
+@keyframes message-fade-up {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 7. 复制勾选 2.5s 衰减消退 */
+@keyframes saved-check-decay {
+  0%, 75% { opacity: 1; transform: scale(1); }
+  100%    { opacity: 0; transform: scale(0.92); }
+}
+
+/* 8. 骨架屏高级倾斜扫光 (REA 取证：2s linear 105deg) */
+@keyframes cds-skeleton-sweep {
+  0%   { transform: translate(-100%); }
+  100% { transform: translate(100%); }
+}
+
+/* 9. 陶土呼吸指示灯 (REA 取证：3s ease-in-out) */
+@keyframes dframe-clay-breathe {
+  0%, 100% { filter: brightness(0.96); transform: scale(0.86); }
+  50%      { filter: brightness(1.06); transform: scale(1); }
+}
+
+/* 10. 活动脉冲灯与思考点脉冲 (REA 取证：1.8s) */
+@keyframes cds-dot-pulse {
+  0%, 5%   { opacity: 0.2857; animation-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1); }
+  15%, 25% { opacity: 1;      animation-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1); }
+  65%, 100%{ opacity: 0.2857; }
+}
+
+@keyframes dframe-dot-blink {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+/* 11. 附件磁贴入场生长 */
+@keyframes file-thumbnail-grow-in {
+  0%   { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 12. 按钮动态物理阻尼按压与回弹 (REA 取证：.cds-btn-squish) */
+.cds-btn-squish {
+  --cds-btn-press-sx: 0.975;
+  --cds-btn-press-sy: 0.975;
+  transform-origin: 50%;
+  transition: transform var(--cds-dur-slow) var(--cds-btn-spring);
+}
+.cds-btn-squish:active, :active > .cds-btn-squish {
+  transform: scale(var(--cds-btn-press-sx), var(--cds-btn-press-sy));
+  transition: transform var(--cds-dur-fast) ease-out;
+}
+
+/* 13. 官方状态指示灯标准类 (REA 取证：.status-dot 6px) */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  position: relative;
+}
+.status-dot[data-kind="ready"] {
+  background: var(--cds-fill-brand, var(--cds-clay));
+}
+.status-dot[data-kind="running"] {
+  background: var(--cds-fill-brand, var(--cds-clay));
+  animation: 1.2s ease-in-out infinite dframe-dot-blink;
+}
+.status-dot[data-kind="error"] {
+  background: var(--cds-fill-danger);
+}
+.status-dot[data-kind="clay"] {
+  background: var(--cds-clay);
+  animation: 3s ease-in-out infinite dframe-clay-breathe;
+}
+
+/* ==========================================================================
+   通用实用类 (CDS Utility Classes)
+   ========================================================================== */
+
+.cds-shadow-sm { box-shadow: var(--cds-shadow-sm) !important; }
+.cds-shadow-md { box-shadow: var(--cds-shadow-md) !important; }
+.cds-shadow-lg { box-shadow: var(--cds-shadow-lg) !important; }
+.cds-shadow-popover { box-shadow: var(--cds-shadow-popover) !important; }
+.cds-panel-shadow { box-shadow: var(--cds-panel-shadow) !important; }
+
+.cds-composer-shadow { 
+  box-shadow: var(--cds-shadow-composer) !important;
+  transition: box-shadow 220ms var(--cds-ease-swift), border-color 220ms ease;
+}
+.cds-composer-shadow:hover { 
+  box-shadow: var(--cds-shadow-composer-hover) !important; 
+}
+.cds-composer-shadow:focus-within { 
+  box-shadow: var(--cds-shadow-composer-focus) !important; 
+}
+
+.cds-hover-ghost {
+  transition: background-color 150ms var(--cds-ease-swift), color 150ms ease, transform 100ms ease;
+}
+.cds-hover-ghost:hover {
+  background-color: var(--cds-fill-ghost-hover) !important;
+  color: var(--cds-text-primary) !important;
+}
+.cds-hover-ghost:active {
+  background-color: var(--cds-fill-ghost-selected) !important;
+  transform: scale(0.98);
+}
+
+.cds-card-interactive {
+  box-shadow: var(--cds-panel-shadow);
+  border-radius: var(--radius-card);
+  transition: box-shadow 200ms var(--cds-ease-swift), transform 200ms var(--cds-ease-swift), border-color 200ms ease;
+}
+.cds-card-interactive:hover {
+  box-shadow: var(--cds-panel-shadow-hover) !important;
+  transform: translateY(-1.5px);
+  border-color: var(--cds-border-strong) !important;
+}
+.cds-card-interactive:active {
+  transform: translateY(0);
+}
+
+.border-hairline {
+  border-width: var(--cds-ring-hairline);
+}
+
+/* ==========================================================================
+   Chapter 3: 会话核心流、时间轴与气泡排版引擎 (REA v6.5.0 取证规范)
+   ========================================================================== */
+
+/* 1. 思考时间轴与状态转场 (取证自 cc1aae219-DtZTxCKj.css) */
+.timeline-status-layer {
+  grid-area: 1 / 1;
+  align-items: center;
+  gap: .25rem;
+  min-width: 0;
+  display: inline-flex;
+}
+.timeline-status-enter { animation: .25s ease-in-out timeline-fade-in; }
+.timeline-status-exit { animation: .15s ease-out forwards timeline-fade-out; }
+.timeline-status-enter-quiet { animation: .24s cubic-bezier(.3, .7, .4, 1) timeline-status-rise; }
+.timeline-status-exit-quiet { animation: .18s ease-out forwards timeline-status-fall; }
+
+.timeline-expand {
+  grid-template-rows: 1fr;
+  display: grid;
+}
+.timeline-expand > * {
+  align-self: start;
+  min-width: 0;
+  min-height: 0;
+}
+.timeline-expand-enter {
+  animation: .2s cubic-bezier(.19, 1, .22, 1) timeline-expand;
+}
+
+.timeline-quiet-dots {
+  gap: 3.5px;
+  display: inline-flex;
+  position: relative;
+  top: .26em;
+}
+.timeline-quiet-dots > span {
+  background: var(--cds-clay, #d97757);
+  opacity: 0;
+  border-radius: 50%;
+  width: 3px;
+  height: 3px;
+  animation: 1.9s cubic-bezier(.4, 0, .2, 1) infinite timeline-quiet-dot;
+}
+.timeline-quiet-dots > span:nth-child(2) { animation-delay: .15s; }
+.timeline-quiet-dots > span:nth-child(3) { animation-delay: .3s; }
+
+.timeline-block-enter {
+  animation: .3s cubic-bezier(.22, 1, .36, 1) both timeline-block-enter;
+}
+@keyframes timeline-block-enter {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(5px) scale(.9);
+  }
+  30% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: none;
+  }
+  100% {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+@keyframes timeline-fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes timeline-fade-out { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+/* 2. 气泡悬浮反应与动态底色注入 (取证自 frame-window-BEI3vR8Q.css / c6a992d55-sXiDGMFQ.css) */
+@media (hover: hover) {
+  .feed-bubble-reacts:has([data-feed-pill-band]):hover :is([data-bubble-variant], [data-cds="AssistantMessage"][data-variant="bubble"]),
+  .feed-bubble-reacts:has([data-feed-pill-band]:focus-within) :is([data-bubble-variant], [data-cds="AssistantMessage"][data-variant="bubble"]),
+  .feed-bubble-reacts[data-menu-open] :is([data-bubble-variant], [data-cds="AssistantMessage"][data-variant="bubble"]) {
+    --cds-bg-user-message: var(--cds-bg-neutral-hover);
+    --feed-bubble-mix: 16%;
+  }
+}
+
+/* 3. 会话排版与气泡嵌套约束 (取证自 frame-shell-chrome-CAw-tYzh.js) */
+[data-cds="UserMessage"] {
+  --cds-message-bubble-radius: calc(var(--cds-radius, 8px) + calc(.25rem * var(--cds-rem-scale, 1)));
+  --cds-message-bubble-pad-x: var(--cds-pad-lg, 16px);
+  --cds-message-bubble-pad-y: var(--cds-pad-md, 12px);
+  --cds-message-bubble-measure: 85%;
+}
+
+[data-cds="AssistantMessage"] {
+  --cds-assistant-message-text-inset: 4px;
+  --cds-assistant-message-text-stop: clamp(0px, (100% - 384px) * .175, 56px);
+}
+
+[data-cds="AssistantMessage"] :is([data-cds="Card"], [data-cds="Surface"], [data-cds="Panel"], [data-cds="Banner"], [data-cds="Aside"], [data-cds="Accordion"], [data-cds="PreviewCard"], [data-cds="Table"], [data-cds="DataTable"], [data-cds="AskUserQuestion"], [data-cds="CommentCard"], [data-cds="ChartContainer"], [data-cds="PointChartContainer"], [data-cds="FileDiff"], [data-cds="UserMessage"]) {
+  --cds-assistant-message-text-inset: 0px;
+  --cds-assistant-message-text-stop: 0px;
+}
+
+/* ==========================================================================
+   Chapter 4: 动效物理学、着色器与环境光影 (REA v6.5.0 取证规范)
+   ========================================================================== */
+
+/* 1. CSS Houdini 自定义变量注册 (CSS Properties & Values API) */
+@property --cds-anim { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-anim2 { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-size { syntax: "<length>"; inherits: false; initial-value: 28px; }
+@property --cds-scroll-fade-top { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-bottom { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-left { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-right { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-top-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-bottom-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-left-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-right-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-y-active { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-x-active { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-top-on { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-bottom-on { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-left-on { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-right-on { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --sheet-card-sweep { syntax: "<angle>"; inherits: false; initial-value: 90deg; }
+@property --sheet-card-lit { syntax: "<number>"; inherits: false; initial-value: 0.55; }
+@property --sheet-card-light-angle { syntax: "<angle>"; inherits: false; initial-value: 165deg; }
+@property --sheet-card-light-reach { syntax: "<percentage>"; inherits: false; initial-value: 55%; }
+
+/* 2. 可变字形动效引擎 (Variable Font Kinetic Engine) */
+[data-cds-anim] {
+  --cds-anim: 0;
+  --cds-anim2: 0;
+  font-variation-settings: "opsz" var(--cds-opsz, 20), "wght" var(--cds-wght, 400), "ANIM" var(--cds-anim), "ANM2" var(--cds-anim2);
+  transition: --cds-anim var(--cds-anim-dur-out, var(--cds-anim-dur, 0.3s)) var(--cds-anim-ease, cubic-bezier(0.34, 1.3, 0.64, 1));
+}
+
+@keyframes cds-anim-loop {
+  0%, 49.99% { --cds-anim2: 0; }
+  50%, 100%  { --cds-anim2: 100; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .group:focus-visible [data-cds-anim],
+  [data-cds-anim]:focus-visible,
+  .group:has(:focus-visible) [data-cds-anim] {
+    --cds-anim: 100;
+    transition-duration: var(--cds-anim-dur, 0.3s);
+  }
+  .group:focus-visible [data-cds-anim-loop],
+  [data-cds-anim-loop]:focus-visible,
+  .group:has(:focus-visible) [data-cds-anim-loop] {
+    animation: 1s linear 0.1s infinite cds-anim-loop;
+  }
+  @media (hover: hover) {
+    .group:hover [data-cds-anim],
+    [data-cds-anim]:hover {
+      --cds-anim: 100;
+      transition-duration: var(--cds-anim-dur, 0.3s);
+    }
+    .group:hover [data-cds-anim-loop],
+    [data-cds-anim-loop]:hover {
+      animation: 1s linear 0.1s infinite cds-anim-loop;
+    }
+  }
+}
+
+/* 3. 生产推理光晕与氛围脉冲 (Ambient Glow & Halo) */
+@keyframes wl-glow {
+  0%, 100% {
+    box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a, 0 0 0 2px var(--cds-fill-brand), 0 0 14px 3px color-mix(in srgb, var(--cds-fill-brand) 60%, transparent);
+  }
+  50% {
+    box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a, 0 0 0 2px var(--cds-fill-brand), 0 0 16px 5px color-mix(in srgb, var(--cds-fill-brand) 85%, transparent);
+  }
+}
+
+@keyframes wl-halo {
+  0%, 100% {
+    box-shadow: 0 0 0 2px var(--cds-fill-brand), 0 0 14px 3px color-mix(in srgb, var(--cds-fill-brand) 60%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 2px var(--cds-fill-brand), 0 0 16px 5px color-mix(in srgb, var(--cds-fill-brand) 85%, transparent);
+  }
+}
+
+.animate-wl-glow { animation: 1.8s ease-in-out infinite wl-glow; }
+.animate-wl-halo { animation: 2.2s ease-in-out infinite wl-halo; }
+
+/* 4. 文本扫光波纹 (Shimmer Text Shine) */
+@keyframes cds-shimmer-text-shine {
+  0%, 15% {
+    background-position: 83.333% 0;
+    animation-timing-function: cubic-bezier(0.714, 0.121, 0.211, 0.888);
+  }
+  85%, 100% {
+    background-position: 16.667% 0;
+  }
+}
+
+@keyframes cds-shimmer-text-shine-strong {
+  0%, 5% {
+    background-position: 83.333% 0;
+    animation-timing-function: cubic-bezier(0.4, 0.15, 0.6, 0.85);
+  }
+  95%, 100% {
+    background-position: 16.667% 0;
+  }
+}
+
+/* 5. Epitaxy 线性扫光与绘制物理学 (Epitaxy Linear Sweep) */
+@keyframes epitaxy-linear-sweep {
+  0% { transform: translate(-100%); }
+  100% { transform: translate(350%); }
+}
+
+@keyframes epitaxy-linear-sweep-rtl {
+  0% { transform: translate(100%); }
+  100% { transform: translate(-350%); }
+}
+
+@keyframes epitaxy-check-draw {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0); }
+}
+
+@keyframes epitaxy-band-exit {
+  to { opacity: 0; translate: 0 6px; }
+}
+
+@keyframes epitaxy-pill-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.epitaxy-linear-sweep {
+  animation: 1.1s cubic-bezier(0.45, 0, 0.55, 1) infinite epitaxy-linear-sweep;
+}
+
+/* 6. 原生 CSS Scroll-Driven 滚动驱动遮罩系统 (Native Scroll-Driven Fade) */
+@keyframes cds-scroll-fade-top {
+  0% { --cds-scroll-fade-top-raw: 0px; }
+  100% { --cds-scroll-fade-top-raw: var(--cds-scroll-fade-size); }
+}
+@keyframes cds-scroll-fade-bottom {
+  0% { --cds-scroll-fade-bottom-raw: var(--cds-scroll-fade-size); }
+  100% { --cds-scroll-fade-bottom-raw: 0px; }
+}
+@keyframes cds-scroll-fade-left {
+  0% { --cds-scroll-fade-left-raw: 0px; }
+  100% { --cds-scroll-fade-left-raw: var(--cds-scroll-fade-size); }
+}
+@keyframes cds-scroll-fade-right {
+  0% { --cds-scroll-fade-right-raw: var(--cds-scroll-fade-size); }
+  100% { --cds-scroll-fade-right-raw: 0px; }
+}
+@keyframes cds-scroll-fade-y-active {
+  0%, 100% { --cds-scroll-fade-y-active: 1; }
+}
+@keyframes cds-scroll-fade-x-active {
+  0%, 100% { --cds-scroll-fade-x-active: 1; }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-fade {
+    --cds-scroll-fade-top: calc(var(--cds-scroll-fade-top-raw) * var(--cds-scroll-fade-y-active) * var(--cds-scroll-fade-top-on));
+    --cds-scroll-fade-bottom: calc(var(--cds-scroll-fade-bottom-raw) * var(--cds-scroll-fade-y-active) * var(--cds-scroll-fade-bottom-on));
+    --cds-scroll-fade-left: calc(var(--cds-scroll-fade-left-raw) * var(--cds-scroll-fade-x-active) * var(--cds-scroll-fade-left-on));
+    --cds-scroll-fade-right: calc(var(--cds-scroll-fade-right-raw) * var(--cds-scroll-fade-x-active) * var(--cds-scroll-fade-right-on));
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #0000000d calc(var(--cds-scroll-fade-top) * .15), #00000026 calc(var(--cds-scroll-fade-top) * .3), #0000004d calc(var(--cds-scroll-fade-top) * .45), #00000080 calc(var(--cds-scroll-fade-top) * .6), #000000b3 calc(var(--cds-scroll-fade-top) * .75), #000000d9 calc(var(--cds-scroll-fade-top) * .87), #000 var(--cds-scroll-fade-top), #000 calc(100% - var(--cds-scroll-fade-bottom)), #000000d9 calc(100% - var(--cds-scroll-fade-bottom) * .87), #000000b3 calc(100% - var(--cds-scroll-fade-bottom) * .75), #00000080 calc(100% - var(--cds-scroll-fade-bottom) * .6), #0000004d calc(100% - var(--cds-scroll-fade-bottom) * .45), #00000026 calc(100% - var(--cds-scroll-fade-bottom) * .3), #0000000d calc(100% - var(--cds-scroll-fade-bottom) * .15), transparent), linear-gradient(to right, transparent, #0000000d calc(var(--cds-scroll-fade-left) * .15), #00000026 calc(var(--cds-scroll-fade-left) * .3), #0000004d calc(var(--cds-scroll-fade-left) * .45), #00000080 calc(var(--cds-scroll-fade-left) * .6), #000000b3 calc(var(--cds-scroll-fade-left) * .75), #000000d9 calc(var(--cds-scroll-fade-left) * .87), #000 var(--cds-scroll-fade-left), #000 calc(100% - var(--cds-scroll-fade-right)), #000000d9 calc(100% - var(--cds-scroll-fade-right) * .87), #000000b3 calc(100% - var(--cds-scroll-fade-right) * .75), #00000080 calc(100% - var(--cds-scroll-fade-right) * .6), #0000004d calc(100% - var(--cds-scroll-fade-right) * .45), #00000026 calc(100% - var(--cds-scroll-fade-right) * .3), #0000000d calc(100% - var(--cds-scroll-fade-right) * .15), transparent);
+    mask-image: linear-gradient(to bottom, transparent, #0000000d calc(var(--cds-scroll-fade-top) * .15), #00000026 calc(var(--cds-scroll-fade-top) * .3), #0000004d calc(var(--cds-scroll-fade-top) * .45), #00000080 calc(var(--cds-scroll-fade-top) * .6), #000000b3 calc(var(--cds-scroll-fade-top) * .75), #000000d9 calc(var(--cds-scroll-fade-top) * .87), #000 var(--cds-scroll-fade-top), #000 calc(100% - var(--cds-scroll-fade-bottom)), #000000d9 calc(100% - var(--cds-scroll-fade-bottom) * .87), #000000b3 calc(100% - var(--cds-scroll-fade-bottom) * .75), #00000080 calc(100% - var(--cds-scroll-fade-bottom) * .6), #0000004d calc(100% - var(--cds-scroll-fade-bottom) * .45), #00000026 calc(100% - var(--cds-scroll-fade-bottom) * .3), #0000000d calc(100% - var(--cds-scroll-fade-bottom) * .15), transparent), linear-gradient(to right, transparent, #0000000d calc(var(--cds-scroll-fade-left) * .15), #00000026 calc(var(--cds-scroll-fade-left) * .3), #0000004d calc(var(--cds-scroll-fade-left) * .45), #00000080 calc(var(--cds-scroll-fade-left) * .6), #000000b3 calc(var(--cds-scroll-fade-left) * .75), #000000d9 calc(var(--cds-scroll-fade-left) * .87), #000 var(--cds-scroll-fade-left), #000 calc(100% - var(--cds-scroll-fade-right)), #000000d9 calc(100% - var(--cds-scroll-fade-right) * .87), #000000b3 calc(100% - var(--cds-scroll-fade-right) * .75), #00000080 calc(100% - var(--cds-scroll-fade-right) * .6), #0000004d calc(100% - var(--cds-scroll-fade-right) * .45), #00000026 calc(100% - var(--cds-scroll-fade-right) * .3), #0000000d calc(100% - var(--cds-scroll-fade-right) * .15), transparent);
+    animation-name: cds-scroll-fade-top, cds-scroll-fade-bottom, cds-scroll-fade-left, cds-scroll-fade-right, cds-scroll-fade-y-active, cds-scroll-fade-x-active;
+    animation-timing-function: linear;
+    animation-fill-mode: both, both, both, both, none, none;
+    animation-duration: auto;
+    animation-timeline: scroll(self), scroll(self), scroll(self inline), scroll(self inline), scroll(self), scroll(self inline);
+    animation-range: 0px var(--cds-scroll-fade-size), calc(100% - var(--cds-scroll-fade-size)) 100%, 0px var(--cds-scroll-fade-size), calc(100% - var(--cds-scroll-fade-size)) 100%, 0px 101%, 0px 101%;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}

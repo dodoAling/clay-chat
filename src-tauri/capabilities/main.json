@@ -1,0 +1,6 @@
+{
+  "identifier": "main",
+  "description": "Capabilities for Clay Chat's local main window only.",
+  "windows": ["main"],
+  "permissions": ["core:default", "core:window:allow-minimize", "core:window:allow-toggle-maximize", "core:window:allow-close", "core:window:allow-start-dragging", "allow-load-workspace", "allow-save-workspace", "allow-load-secret", "allow-save-secret", "allow-export-markdown", "allow-chat-stream", "allow-cancel-chat"]
+}

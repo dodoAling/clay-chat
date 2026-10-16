@@ -1,0 +1,26 @@
+[package]
+name = "clay-chat"
+version = "0.1.0"
+description = "Clay Chat AI Workspace"
+edition = "2021"
+rust-version = "1.77.2"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "=2.12.4", features = [] }
+tauri-plugin-dialog = "=2.7.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.13", default-features = false, features = ["json", "native-tls", "stream"] }
+futures-util = "0.3"
+tokio = { version = "1", features = ["sync", "fs", "time", "macros", "rt-multi-thread"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+keyring = { version = "=3.6.3", features = ["windows-native", "apple-native"] }
+
+[profile.release]
+strip = true
+lto = "thin"
+panic = "abort"
+codegen-units = 16
