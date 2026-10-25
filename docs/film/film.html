@@ -212,7 +212,7 @@ function drawTitle(t) {
   ctx.globalAlpha = a * pop;
   const bounce = 1 + .18 * (1 - easeOut(clamp01(local / .55)));
   const iw = iconSize * bounce;
-  ctx.drawImage(assets.icon, W / 2 - iw / 2, H * .3 - iw / 2, iw, iw);
+  ctx.drawImage(assets.icon, W / 2 - iw / 2, H * .24 - iw / 2, iw, iw);
   ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   ctx.font = `700 108px ${SERIF}`;
   ctx.globalAlpha = a * easeOut(clamp01((local - .15) / .6));
@@ -232,7 +232,7 @@ function drawEnd(t) {
   ctx.save();
   ctx.globalAlpha = a * pop;
   const iw = 118;
-  ctx.drawImage(assets.icon, W / 2 - iw / 2, H * .26 - iw / 2, iw, iw);
+  ctx.drawImage(assets.icon, W / 2 - iw / 2, H * .21 - iw / 2, iw, iw);
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = INK; ctx.font = `700 66px ${SERIF}`;
   ctx.globalAlpha = a * easeOut(clamp01((local - .2) / .6));
@@ -243,6 +243,9 @@ function drawEnd(t) {
   ctx.font = `400 28px ${FONT}`; ctx.fillStyle = DIM;
   ctx.globalAlpha = a * easeOut(clamp01((local - .7) / .6));
   ctx.fillText('github.com/dodoAling/clay-chat', W / 2, H * .26 + 232);
+  ctx.font = `400 22px ${FONT}`; ctx.fillStyle = 'rgba(158,138,118,.6)';
+  ctx.globalAlpha = a * easeOut(clamp01((local - .9) / .6));
+  ctx.fillText('DodoAling · 公众号同名', W / 2, H * .26 + 276);
   ctx.restore();
 }
 
