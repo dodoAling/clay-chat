@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web-9aa7bd)](https://github.com/dodoAling/clay-chat)
 [![License](https://img.shields.io/badge/license-MIT-7d8f69)](LICENSE)
 
-The Claude desktop experience, finally under your control. Clay Chat rebuilds the familiar Claude look, motion, and feel on top of [Open Claude UI](https://github.com/Caho1/open-claude-ui) — while the model, keys, and data stay entirely yours. Plug in an OpenAI-compatible service or the Claude API, and every conversation stays on your machine.
+The Claude desktop experience, finally under your control. Clay Chat rebuilds the familiar Claude look, motion, and feel on top of Open Claude UI — while the model, keys, and data stay entirely yours. Plug in an OpenAI-compatible service or the Claude API, and every conversation stays on your machine.
 
 What you can do with it:
 

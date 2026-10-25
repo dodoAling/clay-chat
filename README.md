@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web-9aa7bd)](https://github.com/dodoAling/clay-chat)
 [![License](https://img.shields.io/badge/license-MIT-7d8f69)](LICENSE)
 
-把「Claude 桌面端」做成你能自己掌控的样子。Clay Chat 复用了 Claude 同款的 [Open Claude UI](https://github.com/Caho1/open-claude-ui) 界面、动效与手感，而模型、密钥和数据完全由你持有——接 OpenAI 兼容服务或 Claude API，对话全部留在本机。
+把「Claude 桌面端」做成你能自己掌控的样子。Clay Chat 复用了 Claude 同款的 Open Claude UI 界面、动效与手感，而模型、密钥和数据完全由你持有——接 OpenAI 兼容服务或 Claude API，对话全部留在本机。
 
 它能做什么：
 
