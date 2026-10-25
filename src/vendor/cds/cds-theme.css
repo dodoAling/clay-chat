@@ -158,6 +158,18 @@
   --radius-card: calc(var(--cds-radius, 8px) + calc(.25rem * var(--cds-rem-scale, 1)));
 
   /* 会话气泡与版心计量核心令牌 (REA v6.5.0 取证自 frame-shell-chrome-CAw-tYzh.js) */
+  /* 中性档别名 (REA 取证自 .cds-root 作用域, Claude 2.42304.2)
+     用户气泡背景经 --cds-bg-user-message 间接依赖这两个别名；缺失会使
+     var() 链在解析期失效、气泡背景回退为透明。 */
+  --cds-bg-neutral: var(--cds-alpha-1);
+  --cds-bg-neutral-hover: var(--cds-alpha-2);
+
+  /* 强调填充别名链 (REA 取证: .cds-root 作用域, Claude 2.42304.2)
+     --cds-fill-accent → --cds-role-accent-fill → --cds-role-accent-450 → --cds-blue-450 */
+  --cds-blue-450: #2a78d6;
+  --cds-role-accent-450: var(--cds-blue-450);
+  --cds-role-accent-fill: var(--cds-role-accent-450);
+  --cds-fill-accent: var(--cds-role-accent-fill);
   --cds-bg-user-message: var(--cds-bg-neutral);
   --cds-bg-user-message-personal: var(--cds-bg-tint-blue);
   --cds-text-user-message-personal: var(--cds-text-tint-blue, #193c5f);
@@ -199,6 +211,15 @@
   --cds-ease-pulse: cubic-bezier(.4, 0, .2, 1);        /* 思考三点跳动呼吸脉冲 */
   --cds-ease-rise: cubic-bezier(.3, .7, .4, 1);        /* 状态条平滑抬升 */
   --cds-ease-fall: cubic-bezier(0, 0, .2, 1);          /* 状态条平滑下落 */
+
+  /* 12b. 时间尺度令牌 (REA 取证自 c6a992d55-sXiDGMFQ.css, Claude 2.42304.2)
+     缺失时下列 var() 引用会让整条 transition 声明被丢弃、计算值退化为 `all 0s`。
+     --cds-dur-slow 被 .cds-btn-squish、卡片按压与 clip-path 过渡共同依赖。 */
+  --cds-dur-fast: 60ms;   /* 瞬态响应：按压塌陷、Focus 环显现、Checkbox 勾选 */
+  --cds-dur-snap: .12s;   /* 瞬时吸附：分段控件滑块、Tab 切换 */
+  --cds-dur-base: .2s;    /* 标准组件过渡：菜单弹出、折叠展开、卡片入场 */
+  --cds-dur-sheet: .3s;   /* 大面板与抽屉：侧边栏、Artifact 面板滑入 */
+  --cds-dur-slow: .45s;   /* 环境转场与按压回弹：.cds-btn-squish 松手复位的弹簧时长 */
   --cds-btn-spring: linear(0, .2459, .6526, .9468, 1.0764, 1.0915, 1.0585, 1.0219, .9993, .9914, .9921, .9957, .9988, 1.0004, 1); /* 15阶物理弹簧回弹 */
 
   /* 13. 字体栈与 CJK 真实回退链 */
@@ -226,6 +247,23 @@
   --cds-fill-brand-subtle: var(--cds-clay-light);
   --cds-fill-danger: #ef4444;
   --cds-text-accent: var(--cds-clay);
+
+  /* 15. 语义化向后兼容别名与跨宿主通用别名 (Backward-Compatibility & Host Aliases) */
+  --cds-bg-surface-0: var(--cds-surface-0);
+  --cds-bg-surface-1: var(--cds-surface-1);
+  --cds-bg-surface-2: var(--cds-surface-2);
+  --cds-bg-surface-3: var(--cds-surface-3);
+  --cds-bg-input: var(--cds-surface-3);
+  --cds-text-tertiary: var(--cds-text-muted);
+  --cds-border-card: var(--cds-border);
+  --cds-radius-pill: 9999px;
+  --cds-radius-card: var(--radius-card);
+  --cds-card-radius: var(--radius-card);
+  --cds-radius-message-bubble: var(--cds-message-bubble-radius);
+  --cds-radius-dialog: 16px;
+  --cds-radius-code: 12px;
+  --cds-radius-btn-md: 8px;
+  --cds-radius-btn-xs: 6px;
 }
 
 /* 高分屏视网膜物理发丝细线补偿 */
@@ -254,11 +292,28 @@
   --cds-clay: #d97757;
   --cds-clay-hover: #e08264;
 
+  /* 强调色链在暗色下不变 (REA 核实: --cds-blue-* 全库仅单值，无 dark 变体；
+     与 --cds-clay 同属品牌色，此处显式重复以对齐既有约定)。 */
+  --cds-blue-450: #2a78d6;
+  --cds-role-accent-450: var(--cds-blue-450);
+  --cds-role-accent-fill: var(--cds-role-accent-450);
+  --cds-fill-accent: var(--cds-role-accent-fill);
+
   --cds-alpha-0: hsla(0, 0%, 100%, 0);
   --cds-alpha-1: hsla(0, 0%, 100%, 0.05);
   --cds-alpha-2: hsla(0, 0%, 100%, 0.09);
   --cds-alpha-3: hsla(0, 0%, 100%, 0.18);
   --cds-alpha-4: hsla(0, 0%, 100%, 0.30);
+
+
+  /* 会话气泡背景在暗色下的取值。
+     --cds-bg-user-message 在 :root 处已绑定 var(--cds-bg-neutral)，该绑定在
+     :root 层完成替换；仅改 --cds-alpha-* 不会回溯更新气泡颜色，故此处显式重声明
+     整条链。客户端对应实现为 hsl(from --cds-neutral-900 ... ) 形式，
+     其中 --cds-neutral-900 在暗色下取 gray-900(#0b0b0b) → 白 5%。 */
+  --cds-bg-neutral: var(--cds-alpha-1);
+  --cds-bg-neutral-hover: var(--cds-alpha-2);
+  --cds-bg-user-message: var(--cds-bg-neutral);
 
   --cds-border: var(--cds-alpha-2);
   --cds-border-strong: var(--cds-alpha-3);
@@ -614,21 +669,6 @@
 /* 1. CSS Houdini 自定义变量注册 (CSS Properties & Values API) */
 @property --cds-anim { syntax: "<number>"; inherits: false; initial-value: 0; }
 @property --cds-anim2 { syntax: "<number>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-size { syntax: "<length>"; inherits: false; initial-value: 28px; }
-@property --cds-scroll-fade-top { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-bottom { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-left { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-right { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-top-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-bottom-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-left-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-right-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-y-active { syntax: "<number>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-x-active { syntax: "<number>"; inherits: false; initial-value: 0; }
-@property --cds-scroll-fade-top-on { syntax: "<number>"; inherits: false; initial-value: 1; }
-@property --cds-scroll-fade-bottom-on { syntax: "<number>"; inherits: false; initial-value: 1; }
-@property --cds-scroll-fade-left-on { syntax: "<number>"; inherits: false; initial-value: 1; }
-@property --cds-scroll-fade-right-on { syntax: "<number>"; inherits: false; initial-value: 1; }
 @property --sheet-card-sweep { syntax: "<angle>"; inherits: false; initial-value: 90deg; }
 @property --sheet-card-lit { syntax: "<number>"; inherits: false; initial-value: 0.55; }
 @property --sheet-card-light-angle { syntax: "<angle>"; inherits: false; initial-value: 165deg; }
@@ -770,7 +810,9 @@
 }
 
 @supports (animation-timeline: scroll()) {
-  .scroll-fade {
+  .scroll-fade,
+  .cds-scroll-fade,
+  .cds-scroll-fade-vertical {
     --cds-scroll-fade-top: calc(var(--cds-scroll-fade-top-raw) * var(--cds-scroll-fade-y-active) * var(--cds-scroll-fade-top-on));
     --cds-scroll-fade-bottom: calc(var(--cds-scroll-fade-bottom-raw) * var(--cds-scroll-fade-y-active) * var(--cds-scroll-fade-bottom-on));
     --cds-scroll-fade-left: calc(var(--cds-scroll-fade-left-raw) * var(--cds-scroll-fade-x-active) * var(--cds-scroll-fade-left-on));
@@ -787,3 +829,158 @@
     mask-composite: intersect;
   }
 }
+
+/* 纯 CSS 滚动消隐回退 (无 scroll-driven 浏览器) */
+.cds-scroll-fade-static-v {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black var(--cds-scroll-fade-size, 28px), black calc(100% - var(--cds-scroll-fade-size, 28px)), transparent);
+  mask-image: linear-gradient(to bottom, transparent, black var(--cds-scroll-fade-size, 28px), black calc(100% - var(--cds-scroll-fade-size, 28px)), transparent);
+}
+
+/* ==========================================================================
+   7. 滚动边缘渐隐引擎 (Scroll-Edge Fade)
+   ---------------------------------------------------------------------------
+   REA 取证自 Claude 2.42304.2 `assets/v1/c6a992d55-sXiDGMFQ.css`。
+
+   客户端设计要点（与简化版的关键差异）：
+   1. 不使用 `animation-range` 硬编码 48px；由 `animation-timeline: scroll(self)`
+      驱动 0→100% 全程插值，实际可见宽度由 `--cds-scroll-fade-size` 决定。
+   2. `*-raw` 只承载「几何进度」（0 → size），不承载「是否启用」；
+      是否启用由 `*-on`（0/1）与 `*-active`（0/1）相乘控制。三者分离，
+      因此可以在触顶/触底时把 `-on` 归零而不打断 raw 的插值连续性。
+   3. `--cds-scroll-fade-{top,bottom,left,right}` 是派生量：
+      raw × active × on，供 mask 引用。
+   4. 全部 `@property` 均声明 `inherits: false`，初始值即兜底
+      ——这是它们不出现在 :root 的原因，而非遗漏。
+   ========================================================================== */
+
+@property --cds-scroll-fade-size       { syntax: "<length>"; inherits: false; initial-value: 28px; }
+@property --cds-scroll-fade-top-raw    { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-bottom-raw { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-left-raw   { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-right-raw  { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-top-on     { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-bottom-on  { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-left-on    { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-right-on   { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --cds-scroll-fade-x-active   { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-y-active   { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-top        { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-bottom     { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-left       { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-right      { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-strip-raw    { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --cds-scroll-fade-strip-active { syntax: "<number>"; inherits: false; initial-value: 0; }
+
+/* 只推进几何进度，不决定可见性 */
+@keyframes cds-scroll-fade-top     { 0% { --cds-scroll-fade-top-raw: 0px; }                      to { --cds-scroll-fade-top-raw: var(--cds-scroll-fade-size); } }
+@keyframes cds-scroll-fade-bottom  { 0% { --cds-scroll-fade-bottom-raw: var(--cds-scroll-fade-size); } to { --cds-scroll-fade-bottom-raw: 0px; } }
+@keyframes cds-scroll-fade-left    { 0% { --cds-scroll-fade-left-raw: 0px; }                     to { --cds-scroll-fade-left-raw: var(--cds-scroll-fade-size); } }
+@keyframes cds-scroll-fade-right   { 0% { --cds-scroll-fade-right-raw: var(--cds-scroll-fade-size); } to { --cds-scroll-fade-right-raw: 0px; } }
+/* 仅用于把 *-active 抬到 1，本身不产生视觉变化 */
+@keyframes cds-scroll-fade-y-active { 0%, to { --cds-scroll-fade-y-active: 1; } }
+@keyframes cds-scroll-fade-x-active { 0%, to { --cds-scroll-fade-x-active: 1; } }
+
+/* 无滚动时间线支持时的静态兜底：保留 scroll-padding，不做遮罩 */
+.scroll-fade-y {
+  scroll-padding-block:
+    calc(var(--cds-scroll-fade-size) * var(--cds-scroll-fade-top-on))
+    calc(var(--cds-scroll-fade-size) * var(--cds-scroll-fade-bottom-on));
+}
+.scroll-fade-x {
+  scroll-padding-inline:
+    calc(var(--cds-scroll-fade-size) * var(--cds-scroll-fade-left-on))
+    calc(var(--cds-scroll-fade-size) * var(--cds-scroll-fade-right-on));
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-fade-y {
+    --cds-scroll-fade-top:    calc(var(--cds-scroll-fade-top-raw)    * var(--cds-scroll-fade-y-active) * var(--cds-scroll-fade-top-on));
+    --cds-scroll-fade-bottom: calc(var(--cds-scroll-fade-bottom-raw) * var(--cds-scroll-fade-y-active) * var(--cds-scroll-fade-bottom-on));
+    animation-name: cds-scroll-fade-top, cds-scroll-fade-bottom, cds-scroll-fade-y-active;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both, both, none;
+    animation-timeline: scroll(self);
+    /* 15 段遮罩：顶部按 0.15/0.30/0.45/0.60/0.75/0.87 递减，底部对称 */
+    -webkit-mask-image: linear-gradient(to bottom,
+      transparent,
+      #0000000d calc(var(--cds-scroll-fade-top) * .15),
+      #00000026 calc(var(--cds-scroll-fade-top) * .3),
+      #0000004d calc(var(--cds-scroll-fade-top) * .45),
+      #00000080 calc(var(--cds-scroll-fade-top) * .6),
+      #000000b3 calc(var(--cds-scroll-fade-top) * .75),
+      #000000d9 calc(var(--cds-scroll-fade-top) * .87),
+      #000 var(--cds-scroll-fade-top),
+      #000 calc(100% - var(--cds-scroll-fade-bottom)),
+      #000000d9 calc(100% - var(--cds-scroll-fade-bottom) * .87),
+      #000000b3 calc(100% - var(--cds-scroll-fade-bottom) * .75),
+      #00000080 calc(100% - var(--cds-scroll-fade-bottom) * .6),
+      #0000004d calc(100% - var(--cds-scroll-fade-bottom) * .45),
+      #00000026 calc(100% - var(--cds-scroll-fade-bottom) * .3),
+      #0000000d calc(100% - var(--cds-scroll-fade-bottom) * .15),
+      transparent);
+    mask-image: linear-gradient(to bottom,
+      transparent,
+      #0000000d calc(var(--cds-scroll-fade-top) * .15),
+      #00000026 calc(var(--cds-scroll-fade-top) * .3),
+      #0000004d calc(var(--cds-scroll-fade-top) * .45),
+      #00000080 calc(var(--cds-scroll-fade-top) * .6),
+      #000000b3 calc(var(--cds-scroll-fade-top) * .75),
+      #000000d9 calc(var(--cds-scroll-fade-top) * .87),
+      #000 var(--cds-scroll-fade-top),
+      #000 calc(100% - var(--cds-scroll-fade-bottom)),
+      #000000d9 calc(100% - var(--cds-scroll-fade-bottom) * .87),
+      #000000b3 calc(100% - var(--cds-scroll-fade-bottom) * .75),
+      #00000080 calc(100% - var(--cds-scroll-fade-bottom) * .6),
+      #0000004d calc(100% - var(--cds-scroll-fade-bottom) * .45),
+      #00000026 calc(100% - var(--cds-scroll-fade-bottom) * .3),
+      #0000000d calc(100% - var(--cds-scroll-fade-bottom) * .15),
+      transparent);
+  }
+
+  .scroll-fade-x {
+    --cds-scroll-fade-left:  calc(var(--cds-scroll-fade-left-raw)  * var(--cds-scroll-fade-x-active) * var(--cds-scroll-fade-left-on));
+    --cds-scroll-fade-right: calc(var(--cds-scroll-fade-right-raw) * var(--cds-scroll-fade-x-active) * var(--cds-scroll-fade-right-on));
+    animation-name: cds-scroll-fade-left, cds-scroll-fade-right, cds-scroll-fade-x-active;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both, both, none;
+    animation-timeline: scroll(self inline);
+    -webkit-mask-image: linear-gradient(to right,
+      transparent,
+      #0000000d calc(var(--cds-scroll-fade-left) * .15),
+      #00000026 calc(var(--cds-scroll-fade-left) * .3),
+      #0000004d calc(var(--cds-scroll-fade-left) * .45),
+      #00000080 calc(var(--cds-scroll-fade-left) * .6),
+      #000000b3 calc(var(--cds-scroll-fade-left) * .75),
+      #000000d9 calc(var(--cds-scroll-fade-left) * .87),
+      #000 var(--cds-scroll-fade-left),
+      #000 calc(100% - var(--cds-scroll-fade-right)),
+      #000000d9 calc(100% - var(--cds-scroll-fade-right) * .87),
+      #000000b3 calc(100% - var(--cds-scroll-fade-right) * .75),
+      #00000080 calc(100% - var(--cds-scroll-fade-right) * .6),
+      #0000004d calc(100% - var(--cds-scroll-fade-right) * .45),
+      #00000026 calc(100% - var(--cds-scroll-fade-right) * .3),
+      #0000000d calc(100% - var(--cds-scroll-fade-right) * .15),
+      transparent);
+    mask-image: linear-gradient(to right,
+      transparent,
+      #0000000d calc(var(--cds-scroll-fade-left) * .15),
+      #00000026 calc(var(--cds-scroll-fade-left) * .3),
+      #0000004d calc(var(--cds-scroll-fade-left) * .45),
+      #00000080 calc(var(--cds-scroll-fade-left) * .6),
+      #000000b3 calc(var(--cds-scroll-fade-left) * .75),
+      #000000d9 calc(var(--cds-scroll-fade-left) * .87),
+      #000 var(--cds-scroll-fade-left),
+      #000 calc(100% - var(--cds-scroll-fade-right)),
+      #000000d9 calc(100% - var(--cds-scroll-fade-right) * .87),
+      #000000b3 calc(100% - var(--cds-scroll-fade-right) * .75),
+      #00000080 calc(100% - var(--cds-scroll-fade-right) * .6),
+      #0000004d calc(100% - var(--cds-scroll-fade-right) * .45),
+      #00000026 calc(100% - var(--cds-scroll-fade-right) * .3),
+      #0000000d calc(100% - var(--cds-scroll-fade-right) * .15),
+      transparent);
+  }
+}
+
+

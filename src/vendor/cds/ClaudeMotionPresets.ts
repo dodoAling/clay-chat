@@ -55,8 +55,11 @@ export function calcDampedHarmonicOscillator(
 // ============================================================================
 
 /**
- * 预设 1: 按钮点击、开关切换、图标按压 (Button & Small Controls)
- * 特征：高频微弹，利落归位无粘滞。超调量 +8.8% (ζ = 0.612)，0.22s 极速收敛。
+ * 预设 1: 麦克风按钮 / 语音状态条 (Mic & Voice Bar)
+ * 特征：高频微弹，超调量 +8.8% (ζ = 0.612)。
+ * 来源：`ion-dist/assets/v1/shared-8-PHXy9B6B.js` — `{type:"spring",stiffness:600,damping:30}`
+ * 实测用途：麦克风按钮 mount/unmount 的 `scale/opacity` 出入场、语音状态
+ *          `width:0→32` 展开、按钮 padding 形变、图形切换的 `popLayout`。
  */
 export const SPRING_BOUNCY: Transition = {
   type: "spring",
@@ -66,8 +69,12 @@ export const SPRING_BOUNCY: Transition = {
 };
 
 /**
- * 预设 2: 气泡上浮、卡片展开、浮层 Popover 唤起 (Card / Popover Reveal)
- * 特征：沉稳顺滑，微冲后平稳着陆。超调量 +1.8%，0.35s 收敛。
+ * 预设 2: 手势拖拽回弹 (Drag Release) —— 不是入场动画
+ * 特征：沉稳顺滑，超调量 +1.9% (ζ = 0.783)。
+ * 来源：`ion-dist/assets/v1/c427176b2-DuM09fKk.js` — `{type:"spring",stiffness:320,damping:28}`
+ * 实测用途：`animate(current.dx, target.dx, {...preset, velocity})` 与 `dy` 成对，
+ *          拖动结束后按松手速度回弹到落位点；带 `prefers-reduced-motion`
+ *          分支直接跳位（客户端 65 个文件均做此降级）。
  */
 export const SPRING_SNAPPY: Transition = {
   type: "spring",
@@ -77,8 +84,18 @@ export const SPRING_SNAPPY: Transition = {
 };
 
 /**
- * 预设 3: 点赞动画、复制成功勾选、新消息微提示 (Bouncy Light Feedback)
- * 特征：两周期明显跳跃感，激发积极情绪反馈。超调量 +19.4%，0.58s 收敛。
+ * 预设 3: **非客户端提取，本项目自建**
+ * 特征：明显两周期跳跃感，超调量 +19.5% (ζ = 0.462)。
+ *
+ * 客户端全量搜索无 `stiffness:380` / `damping:18`，故 `380/18` 不是 CDS 观测值。
+ * 文档曾把客户端的 `{type:"spring",duration:.32,bounce:.15}`
+ * （`shared-9-Co0ph6Xn.js`，听写/静息状态切换）标注为「或 `dur 0.32`」的等价写法，
+ * 但按 framer-motion `tn()` 反解，该配置实际等价于
+ * `stiffness≈244, damping≈26.6, ζ≈0.85`（超调仅 +0.6%），与 380/18 相差极大。
+ * 如需还原该切换手感，请直接用 duration/bounce 形式，不要用本预设近似。
+ *
+ * 本预设仅用于补足「零过冲」与「高频微弹」之间的中段强弹性档位，
+ * 借用前请确认符合你的设计意图，不要当作 Claude 观测值引用。
  */
 export const SPRING_GENTLE: Transition = {
   type: "spring",
@@ -88,8 +105,12 @@ export const SPRING_GENTLE: Transition = {
 };
 
 /**
- * 预设 4: 抽屉与侧边栏手势吸附、面板分割拖拽 (High Damping Panel Drag)
- * 特征：绝对零过冲 (过阻尼 ζ = 3.65)，松手瞬间如磁吸般强力咬合。
+ * 预设 4: 文件查看器面板宽度 (File Viewer Panel Width)
+ * 特征：绝对零过冲（过阻尼 ζ = 3.652）。
+ * 来源：`ion-dist/assets/v1/c8ad300b7-07P9B-v4.js` — `{type:"spring",stiffness:1200,damping:80,mass:.1}`
+ * 实测用途：`file_viewer` 面板展开时 `animate(width, 384, preset)` 将宽度从
+ *          `initial` 弹到 `384`（常量 `jt=384`），关闭时弹回 `Pt().initial`；
+ *          同一文件中 `kt=320` 是最小宽度、`At=480` 是默认宽度。
  */
 export const SPRING_HEAVY_SNAP: Transition = {
   type: "spring",

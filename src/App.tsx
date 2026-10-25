@@ -106,6 +106,8 @@ function SettingsModal({ settings, apiKey, titlebar, onTitlebar, onSave, onClose
   </Modal>;
 }
 
+const isAppleWebKit = navigator.vendor === 'Apple Computer, Inc.';
+
 type ComposerProps = { busy: boolean; settings: Settings; onSend: (text: string, files: Attachment[]) => void; onStop: () => void; onSettings: () => void; notify: (message: string) => void; suggestion: { text: string; id: number } | null };
 function Composer({ busy, settings, onSend, onStop, onSettings, notify, suggestion }: ComposerProps) {
   const [text, setText] = useState('');
@@ -113,6 +115,7 @@ function Composer({ busy, settings, onSend, onStop, onSettings, notify, suggesti
   const textarea = useRef<HTMLTextAreaElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const composing = useRef(false);
+  const lastCompositionEnd = useRef(-1);
   useEffect(() => { if (suggestion) { setText(suggestion.text); textarea.current?.focus(); } }, [suggestion]);
   useEffect(() => { if (textarea.current) { textarea.current.style.height = 'auto'; textarea.current.style.height = `${Math.min(180, textarea.current.scrollHeight)}px`; } }, [text]);
   function send() {
@@ -139,8 +142,13 @@ function Composer({ busy, settings, onSend, onStop, onSettings, notify, suggesti
     <form className={`composer ${busy ? 'is-busy' : ''}`} onSubmit={event => { event.preventDefault(); send(); }}>
       {attachments.length > 0 && <div className="composer-attachments">{attachments.map(file => <span className="attachment-chip" key={file.id}><FileText size={14} /><span>{file.name}</span><button type="button" aria-label={`移除 ${file.name}`} onClick={() => setAttachments(attachments.filter(item => item.id !== file.id))}><X size={12} /></button></span>)}</div>}
       <textarea ref={textarea} aria-label="消息输入框" placeholder="有什么想法？从这里开始…" value={text} onChange={event => setText(event.target.value)} rows={2} maxLength={150000} disabled={busy}
-        onCompositionStart={() => { composing.current = true; }} onCompositionEnd={() => { composing.current = false; }}
-        onKeyDown={event => { if (composing.current || event.nativeEvent.isComposing || event.keyCode === 229) return; if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } }} />
+        onCompositionStart={() => { composing.current = true; }} onCompositionEnd={event => { composing.current = false; lastCompositionEnd.current = event.nativeEvent.timeStamp; }}
+        onKeyDown={event => {
+          if (composing.current || event.nativeEvent.isComposing || event.keyCode === 229) return;
+          // WebKit 在 compositionend 后会补发一次虚假回车，500ms 内的 Enter 需拦截
+          if (isAppleWebKit && event.key === 'Enter' && Math.abs(event.nativeEvent.timeStamp - lastCompositionEnd.current) < 500) { lastCompositionEnd.current = -1; event.preventDefault(); return; }
+          if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); }
+        }} />
       <div className="composer-toolbar"><div className="composer-tools">
         <IconButton label="添加文本附件" onClick={() => fileInput.current?.click()} disabled={busy}><Plus size={20} /></IconButton>
         <span className="tool-divider" />
