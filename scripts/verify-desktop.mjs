@@ -8,7 +8,7 @@ import net from 'node:net';
 import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const binary = process.env.CLAY_CHAT_DESKTOP_BINARY || join(root, 'src-tauri', 'target', 'release', 'clay-chat.exe');
+const binary = process.env.CLAY_CHAT_DESKTOP_BINARY || join(root, 'desktop', 'src-tauri', 'target', 'release', 'clay-chat.exe');
 await access(binary);
 const artifacts = join(root, '.artifacts', 'native-verification');
 const profile = join(artifacts, `profile-${Date.now()}`);

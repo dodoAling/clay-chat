@@ -7,5 +7,5 @@ release/
 !.env.example
 *.log
 *.tsbuildinfo
-src-tauri/target/
-src-tauri/gen/
+desktop/src-tauri/target/
+desktop/src-tauri/gen/

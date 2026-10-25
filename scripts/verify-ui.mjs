@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { startServer } from '../server/index.mjs';
+import { startServer } from '../web/index.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const artifacts = join(root, '.artifacts', 'verification');

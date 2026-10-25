@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { startServer } from '../server/index.mjs';
-import { readSse } from '../server/protocol.mjs';
+import { startServer } from '../web/index.mjs';
+import { readSse } from '../web/protocol.mjs';
 
 async function fixture(t, handler) {
   const upstream = http.createServer(handler);

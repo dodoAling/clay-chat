@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Readable } from 'node:stream';
-import { readSse, endpointFor, buildUpstream, normalizeEvent } from '../server/protocol.mjs';
+import { readSse, endpointFor, buildUpstream, normalizeEvent } from '../web/protocol.mjs';
 
 test('SSE survives every UTF-8 byte boundary, CRLF, comments, multiline, and EOF', async () => {
   const input = Buffer.from(': heartbeat\r\n\r\nevent: delta\r\ndata: {"text":"你好🌱"}\r\n\r\ndata: first\ndata: second\n\ndata: [DONE]');
