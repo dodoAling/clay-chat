@@ -32,7 +32,7 @@ const app = await startServer({ port: 0 });
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 async function screenshot(page, name) {
   await page.waitForFunction(() => !document.querySelector('.welcome') || Number(getComputedStyle(document.querySelector('.welcome')).opacity) > .999);
-  await page.evaluate(async () => { await Promise.all(document.getAnimations().filter(animation => animation.effect?.getTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))); });
+  await page.evaluate(async () => { await Promise.all(document.getAnimations().filter(animation => animation.timeline === document.timeline && animation.effect?.getTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))); });
   await page.screenshot({ path: join(artifacts, name), animations: 'disabled' });
 }
 async function complete(page) { await page.getByRole('button', { name: '停止生成', exact: true }).waitFor({ state: 'hidden', timeout: 20000 }); }

@@ -28,7 +28,7 @@ const workspace = {
 
 async function settle(page) {
   await page.evaluate(async () => {
-    await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {})));
+    await Promise.all(document.getAnimations().filter(a => a.timeline === document.timeline && a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {})));
   });
 }
 async function shot(page, name) { await settle(page); await page.screenshot({ path: join(out, name), animations: 'disabled' }); console.log('saved', name); }

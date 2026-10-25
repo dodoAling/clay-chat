@@ -71,6 +71,7 @@ class Take {
     await this.page.evaluate(dt => {
       const seen = (window.__clayFilmSeen ??= new WeakSet());
       for (const a of document.getAnimations()) {
+        if (a.timeline !== document.timeline) continue;
         if (!seen.has(a)) { seen.add(a); a.pause(); a.currentTime = 0; }
         a.currentTime += dt;
       }

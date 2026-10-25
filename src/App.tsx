@@ -208,6 +208,21 @@ export default function App({ initialState, initialKey }: { initialState: Worksp
   const busy = streamingId !== null;
   const messages = active?.messages || [];
   const scroller = useClaudeScrollPinning([messages.length, messages.at(-1)?.content]);
+  // 仅在有溢出内容时启用边缘渐隐，避免短会话露出固定的底部遮罩
+  useEffect(() => {
+    const el = scroller.containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const enabled = el.scrollHeight > el.clientHeight + 1 ? '1' : '0';
+      el.style.setProperty('--cds-scroll-fade-top-on', enabled);
+      el.style.setProperty('--cds-scroll-fade-bottom-on', enabled);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    if (el.firstElementChild instanceof HTMLElement) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, [scroller.containerRef, state.activeId]);
   const notify = useCallback((message: string) => {
     setToast(message); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 3500);
   }, []);
@@ -316,7 +331,7 @@ export default function App({ initialState, initialKey }: { initialState: Worksp
         <div className="suggestion-heading"><span>从一点灵感开始</span><span className="suggestion-rule" /><span>或写下任何你想聊的</span></div>
         <div className="suggestion-grid">{suggestions.map(item => <button key={item.label} className="suggestion-card" onClick={() => setSuggestion({ text: item.prompt, id: Date.now() })}><span className={`suggestion-icon ${item.color}`}><item.icon size={20} strokeWidth={1.6} /></span><span className="suggestion-text"><strong>{item.label}</strong><span>{item.subtitle}</span></span><ArrowUp size={15} className="suggestion-arrow" /></button>)}</div>
         <p className="welcome-footnote"><span className="tiny-flower">✳</span> 少一点干扰，多一点专注。</p>
-      </motion.section></div> : <div className="chat-layout"><div className="message-scroll" ref={scroller.containerRef} onScroll={scroller.handleScroll} onWheel={scroller.markUserInput} onTouchStart={scroller.markUserInput} onKeyDown={event => { if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) scroller.markUserInput(); }} tabIndex={0} aria-label="对话内容"><div className="message-column">{messages.map((message, index) => <MessageView key={message.id} message={message} onCopy={() => void copy(message.content)} onRetry={retry} last={index === messages.length - 1} busy={busy} />)}</div></div>{scroller.showJumpControl && <button className="jump-button" onClick={() => scroller.scrollToBottom(true)}><ArrowDown size={15} />回到最新</button>}<div className="chat-composer"><Composer key={active.id} busy={busy} settings={state.settings} onSend={send} onStop={stop} onSettings={() => setSettingsOpen(true)} notify={notify} suggestion={null} /></div></div>}
+      </motion.section></div> : <div className="chat-layout"><div className="message-scroll scroll-fade-y" ref={scroller.containerRef} onScroll={scroller.handleScroll} onWheel={scroller.markUserInput} onTouchStart={scroller.markUserInput} onKeyDown={event => { if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) scroller.markUserInput(); }} tabIndex={0} aria-label="对话内容"><div className="message-column">{messages.map((message, index) => <MessageView key={message.id} message={message} onCopy={() => void copy(message.content)} onRetry={retry} last={index === messages.length - 1} busy={busy} />)}</div></div>{scroller.showJumpControl && <button className="jump-button" onClick={() => scroller.scrollToBottom(true)}><ArrowDown size={15} />回到最新</button>}<div className="chat-composer"><Composer key={active.id} busy={busy} settings={state.settings} onSend={send} onStop={stop} onSettings={() => setSettingsOpen(true)} notify={notify} suggestion={null} /></div></div>}
       <footer className="workspace-footer"><span><span className="footer-dot" /> 为专注而设计 <span className="footer-separator">·</span> Open Claude UI</span><span>{window.clay ? <Monitor size={12} /> : <Globe2 size={12} />} {window.clay ? 'DESKTOP' : 'WEB'} <span className="version-label">v0.1</span></span></footer>
     </main>
     {settingsOpen && <SettingsModal settings={state.settings} apiKey={apiKey} titlebar={titlebarPref} onTitlebar={value => setState(previous => ({ ...previous, titlebar: value }))} onClose={() => setSettingsOpen(false)} onSave={async (settings, key) => {
