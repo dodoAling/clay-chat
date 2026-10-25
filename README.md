@@ -18,20 +18,14 @@
 
 ## 界面截图
 
-[![产品短片封面](docs/media/clay-chat-tour-cover.png)](docs/media/clay-chat-tour-1080p.mp4)
-
-<p align="center">
-  <a href="docs/media/clay-chat-tour-1080p.mp4">▶ 观看 26 秒产品短片</a> ·
-  <a href="docs/media/poster-1920x1080.png">宣传海报</a> ·
-  <a href="docs/media/clay-chat-tour.gif">GIF 预览</a>
-</p>
+![深色主题下的 Clay Chat 桌面对话界面，macOS 风格标题栏](docs/media/conversation-desktop-dark.png)
 
 | 浅色主题 | 深色主题 |
 | --- | --- |
 | ![网页对话界面：带文本附件与流式模型回复](docs/media/conversation-web.png) | ![深色主题下的网页对话界面](docs/media/conversation-dark.png) |
 | ![带建议卡片与输入框的欢迎页](docs/media/welcome.png) | ![深色主题下的欢迎页](docs/media/welcome-dark.png) |
 | ![带可折叠侧边栏的移动端布局](docs/media/welcome-mobile.png) | ![深色主题下的移动端布局](docs/media/welcome-mobile-dark.png) |
-| ![带原生标题栏的无边框桌面窗口](docs/media/welcome-desktop.png) | ![深色主题下的桌面窗口](docs/media/welcome-desktop-dark.png) |
+| ![无边框桌面窗口，macOS 风格标题栏](docs/media/welcome-desktop.png) | ![深色主题下的桌面窗口，macOS 风格标题栏](docs/media/welcome-desktop-dark.png) |
 
 ## 启动
 
@@ -110,8 +104,8 @@ web/                网页同源服务及双协议代理
 desktop/src-tauri/  Tauri 2、Rust 模型请求、本地数据与系统凭据
 scripts/            网页和原生桌面验证
 tests/              网页代理与 SSE 边界测试
-docs/media/         README 截图、短片与海报
-docs/film/          短片画布与海报版式（npm run film）
+docs/media/         README 截图
+docs/film/          短片画布与海报版式（npm run film，产物不入库）
 licenses/           上游许可证
 ```
 

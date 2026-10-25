@@ -7,7 +7,8 @@ export type Message = {
 };
 export type Conversation = { id: string; title: string; messages: Message[]; updatedAt: number; pinned: boolean };
 export type Settings = { provider: Provider; baseUrl: string; model: string; systemPrompt: string };
-export type Workspace = { version: 1; conversations: Conversation[]; activeId: string | null; settings: Settings; theme: 'light' | 'dark' };
+export type TitlebarStyle = 'auto' | 'windows' | 'macos';
+export type Workspace = { version: 1; conversations: Conversation[]; activeId: string | null; settings: Settings; theme: 'light' | 'dark'; titlebar?: TitlebarStyle };
 export type DesktopBridge = {
   isDesktop: boolean; platform: string;
   loadState: () => Promise<unknown>; saveState: (state: Workspace) => Promise<void>;

@@ -18,20 +18,14 @@ What you can do with it:
 
 ## Screenshots
 
-[![Product film cover](docs/media/clay-chat-tour-cover.png)](docs/media/clay-chat-tour-1080p.mp4)
-
-<p align="center">
-  <a href="docs/media/clay-chat-tour-1080p.mp4">▶ Watch the 26-second product film</a> ·
-  <a href="docs/media/poster-1920x1080.png">Poster</a> ·
-  <a href="docs/media/clay-chat-tour.gif">GIF preview</a>
-</p>
+![Clay Chat desktop conversation in the dark theme, macOS-style titlebar](docs/media/conversation-desktop-dark.png)
 
 | Light theme | Dark theme |
 | --- | --- |
 | ![Web conversation with a text attachment and a streamed reply](docs/media/conversation-web.png) | ![Web conversation in the dark theme](docs/media/conversation-dark.png) |
 | ![Welcome screen with suggestion cards and the composer](docs/media/welcome.png) | ![Welcome screen in the dark theme](docs/media/welcome-dark.png) |
 | ![Mobile layout with the collapsible sidebar](docs/media/welcome-mobile.png) | ![Mobile layout in the dark theme](docs/media/welcome-mobile-dark.png) |
-| ![Frameless desktop window with the native titlebar](docs/media/welcome-desktop.png) | ![Desktop window in the dark theme](docs/media/welcome-desktop-dark.png) |
+| ![Frameless desktop window with a macOS-style titlebar](docs/media/welcome-desktop.png) | ![Desktop window in the dark theme](docs/media/welcome-desktop-dark.png) |
 
 ## Start
 
@@ -110,8 +104,8 @@ web/                Same-origin web service and the dual-protocol proxy
 desktop/src-tauri/  Tauri 2, Rust model requests, local storage and system credentials
 scripts/            Web and native desktop verification
 tests/              Web proxy and SSE boundary tests
-docs/media/         README screenshots, film and poster
-docs/film/          Film canvas and poster layouts (npm run film)
+docs/media/         README screenshots
+docs/film/          Film canvas and poster layouts (npm run film; outputs are git-ignored)
 licenses/           Upstream licenses
 ```
 

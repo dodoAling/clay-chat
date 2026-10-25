@@ -9,3 +9,8 @@ release/
 *.tsbuildinfo
 desktop/src-tauri/target/
 desktop/src-tauri/gen/
+
+# 宣发产物（npm run film / film:clips 本地重新生成，不入库）
+docs/media/clay-chat-tour*
+docs/media/poster-*.png
+docs/film/clips/

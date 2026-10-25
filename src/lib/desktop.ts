@@ -7,7 +7,7 @@ export function installDesktopBridge() {
   if (!isTauri()) return;
   let saves = Promise.resolve();
   window.clay = {
-    isDesktop: true, platform: navigator.userAgent.includes('Windows') ? 'win32' : 'other',
+    isDesktop: true, platform: navigator.userAgent.includes('Windows') ? 'win32' : navigator.userAgent.includes('Macintosh') ? 'darwin' : 'other',
     loadState: () => invoke('load_workspace'),
     saveState: state => { saves = saves.catch(() => {}).then(() => invoke<void>('save_workspace', { workspace: state })); return saves; },
     loadSecret: () => invoke('load_secret'),

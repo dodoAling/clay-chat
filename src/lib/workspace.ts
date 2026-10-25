@@ -3,7 +3,7 @@ export const STORAGE_KEY = 'clay-chat.workspace.v1';
 export const KEY_STORAGE = 'clay-chat.session-key';
 export const defaultSettings: Settings = { provider: 'demo', baseUrl: 'https://api.openai.com/v1', model: '', systemPrompt: '你是一位善于思考、表达清晰的 AI 助手。请优先使用中文回答，必要时使用 Markdown 排版。' };
 export function emptyWorkspace(): Workspace {
-  return { version: 1, conversations: [], activeId: null, settings: { ...defaultSettings }, theme: 'light' };
+  return { version: 1, conversations: [], activeId: null, settings: { ...defaultSettings }, theme: 'light', titlebar: 'auto' };
 }
 export function restoreWorkspace(value: unknown): Workspace {
   const fallback = emptyWorkspace();
@@ -21,7 +21,7 @@ export function restoreWorkspace(value: unknown): Workspace {
     model: typeof data.settings?.model === 'string' ? data.settings.model : '',
     systemPrompt: typeof data.settings?.systemPrompt === 'string' ? data.settings.systemPrompt : fallback.settings.systemPrompt,
   };
-  return { version: 1, conversations, settings, activeId: conversations.some(item => item.id === data.activeId) ? data.activeId! : null, theme: data.theme === 'dark' ? 'dark' : 'light' };
+  return { version: 1, conversations, settings, activeId: conversations.some(item => item.id === data.activeId) ? data.activeId! : null, theme: data.theme === 'dark' ? 'dark' : 'light', titlebar: ['auto', 'windows', 'macos'].includes(data.titlebar || '') ? data.titlebar : 'auto' };
 }
 export async function loadWorkspace(): Promise<Workspace> {
   try {

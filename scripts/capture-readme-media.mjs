@@ -22,7 +22,7 @@ const conversation = {
   ],
 };
 const workspace = {
-  version: 1, theme: 'dark', activeId: conversation.id, conversations: [conversation],
+  version: 1, theme: 'dark', titlebar: 'macos', activeId: conversation.id, conversations: [conversation],
   settings: { provider: 'demo', baseUrl: 'https://api.openai.com/v1', model: '', systemPrompt: '你是一位善于思考、表达清晰的 AI 助手。' },
 };
 
@@ -81,6 +81,11 @@ try {
   await page.getByRole('button', { name: '开启新对话' }).click();
   await page.getByRole('heading', { name: /给想法一点/ }).waitFor();
   await shot(page, 'welcome-desktop-dark.png');
+  await page.getByRole('button', { name: '切换浅色主题' }).click();
+  await shot(page, 'welcome-desktop.png');
+  await page.locator('.conversation-link').first().click();
+  await page.getByRole('article', { name: '助手消息' }).waitFor();
+  await shot(page, 'conversation-desktop.png');
 } finally {
   await cdp.close().catch(() => {});
   child.kill();

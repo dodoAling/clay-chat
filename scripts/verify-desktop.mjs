@@ -94,6 +94,13 @@ try {
   assert.equal(await page.evaluate(() => window.clay?.isDesktop), true);
   assert.equal(await page.evaluate(() => typeof window.require), 'undefined');
   assert.equal(await page.locator('.desktop-titlebar').count(), 1);
+  await page.getByRole('button', { name: '设置', exact: true }).click();
+  await page.getByRole('button', { name: 'macOS', exact: true }).click();
+  assert.equal(await page.locator('.desktop-titlebar.mac').count(), 1);
+  assert.equal(await page.locator('.traffic-lights button').count(), 3);
+  await page.getByRole('button', { name: 'Windows', exact: true }).click();
+  assert.equal(await page.locator('.desktop-titlebar.mac').count(), 0);
+  await page.getByRole('button', { name: '关闭弹窗' }).click();
   await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.welcome')).opacity) > .999);
   await page.screenshot({ path: join(artifacts, 'welcome-desktop.png'), animations: 'disabled' });
   checks.push('Embedded Tauri UI and native window controls');

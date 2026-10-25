@@ -7,13 +7,14 @@ import {
   Search, Star, Settings2, Sun, Moon, Download, Trash2, Copy, Check, RotateCcw,
   X, Square, FileText, Code2, Feather, BookOpen, ArrowRight, Globe2, Monitor,
   Minus, Maximize2, Eye, EyeOff, AlertCircle, Lightbulb, Sprout, CornerDownLeft,
+  AppWindow, AppWindowMac,
 } from 'lucide-react';
 import { CdsButton } from './vendor/cds/CdsButton';
 import { SPRING_SNAPPY } from './vendor/cds/ClaudeMotionPresets';
 import { useClaudeScrollPinning } from './vendor/cds/useClaudeScrollPinning';
 import { KEY_STORAGE, exportMarkdown, saveWorkspace, uid } from './lib/workspace';
 import { streamChat } from './lib/chat';
-import type { Workspace, Settings, Provider, Conversation, Message, Attachment } from './types';
+import type { Workspace, Settings, Provider, Conversation, Message, Attachment, TitlebarStyle } from './types';
 
 function ClayMark({ small = false }: { small?: boolean }) {
   return <svg className={small ? 'clay-mark small' : 'clay-mark'} viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -39,7 +40,13 @@ function Modal({ title, eyebrow, onClose, children, className = '' }: { title: s
 
 const providerNames: Record<Provider, string> = { demo: '演示助手', openai: 'OpenAI 兼容', anthropic: 'Claude API' };
 
-function SettingsModal({ settings, apiKey, onSave, onClose }: { settings: Settings; apiKey: string; onSave: (value: Settings, key: string) => Promise<void>; onClose: () => void }) {
+const titlebarOptions: Array<{ value: TitlebarStyle; label: string; icon: typeof Monitor }> = [
+  { value: 'auto', label: '跟随系统', icon: Monitor },
+  { value: 'windows', label: 'Windows', icon: AppWindow },
+  { value: 'macos', label: 'macOS', icon: AppWindowMac },
+];
+
+function SettingsModal({ settings, apiKey, titlebar, onTitlebar, onSave, onClose }: { settings: Settings; apiKey: string; titlebar: TitlebarStyle; onTitlebar: (value: TitlebarStyle) => void; onSave: (value: Settings, key: string) => Promise<void>; onClose: () => void }) {
   const [draft, setDraft] = useState(settings);
   const [key, setKey] = useState(apiKey);
   const [showKey, setShowKey] = useState(false);
@@ -84,6 +91,15 @@ function SettingsModal({ settings, apiKey, onSave, onClose }: { settings: Settin
         <p className="field-hint">{window.clay ? 'Key 使用系统加密保存在此设备。' : 'Key 仅保留在当前浏览器标签页，关闭后自动清除。'}</p>
         <details className="advanced-settings"><summary>系统提示词 <ChevronDown size={14} /></summary><textarea aria-label="系统提示词" rows={4} value={draft.systemPrompt} onChange={event => setDraft({ ...draft, systemPrompt: event.target.value })} maxLength={20000} /></details>
       </div>}
+      {window.clay && <>
+        <span className="field-label">窗口标题栏</span>
+        <div className="provider-options" role="group" aria-label="窗口标题栏样式">
+          {titlebarOptions.map(option => <button key={option.value} type="button" aria-pressed={titlebar === option.value} className={titlebar === option.value ? 'selected' : ''} onClick={() => onTitlebar(option.value)}>
+            <option.icon size={17} /><span>{option.label}</span>{titlebar === option.value && <Check size={14} />}
+          </button>)}
+        </div>
+        <p className="field-hint">仅影响桌面窗口的标题栏样式，切换立即生效。</p>
+      </>}
       {error && <p className="form-error" role="alert"><AlertCircle size={15} />{error}</p>}
       <div className="modal-actions"><span><Monitor size={14} /> 网页与桌面，共用体验</span><CdsButton type="submit" variant="primary" size="lg" className="primary-action" isLoading={saving}>保存设置 <ArrowRight size={16} /></CdsButton></div>
     </form>
@@ -261,10 +277,14 @@ export default function App({ initialState, initialKey }: { initialState: Worksp
   }
   function togglePin(id: string) { setState(previous => ({ ...previous, conversations: previous.conversations.map(item => item.id === id ? { ...item, pinned: !item.pinned } : item) })); }
   function selectThread(id: string) { setState(previous => ({ ...previous, activeId: id })); setSidebarOpen(false); setSearchOpen(false); }
+  const titlebarPref = state.titlebar ?? 'auto';
+  const titlebar = !window.clay ? null : titlebarPref !== 'auto' ? titlebarPref : window.clay.platform === 'darwin' ? 'macos' : 'windows';
   const listed = [...state.conversations].filter(item => filter === 'all' || item.pinned).sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt);
   const results = state.conversations.filter(item => item.title.toLowerCase().includes(query.toLowerCase()) || item.messages.some(message => message.content.toLowerCase().includes(query.toLowerCase()))).sort((a, b) => b.updatedAt - a.updatedAt);
   return <div className={`app-shell ${window.clay ? 'desktop-shell' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-    {window.clay && <div className="desktop-titlebar" data-tauri-drag-region><span data-tauri-drag-region><ClayMark small /> Clay Chat</span><div><IconButton label="最小化窗口" onClick={() => window.clay?.windowControl('minimize')}><Minus size={15} /></IconButton><IconButton label="最大化窗口" onClick={() => window.clay?.windowControl('maximize')}><Maximize2 size={13} /></IconButton><IconButton label="关闭窗口" className="window-close" onClick={() => window.clay?.windowControl('close')}><X size={16} /></IconButton></div></div>}
+    {window.clay && (titlebar === 'macos'
+      ? <div className="desktop-titlebar mac" data-tauri-drag-region><div className="traffic-lights"><button className="tl tl-close" aria-label="关闭窗口" onClick={() => window.clay?.windowControl('close')}><X size={8} /></button><button className="tl tl-min" aria-label="最小化窗口" onClick={() => window.clay?.windowControl('minimize')}><Minus size={8} /></button><button className="tl tl-max" aria-label="最大化窗口" onClick={() => window.clay?.windowControl('maximize')}><Plus size={8} /></button></div><span className="titlebar-center"><ClayMark small /> Clay Chat</span></div>
+      : <div className="desktop-titlebar" data-tauri-drag-region><span data-tauri-drag-region><ClayMark small /> Clay Chat</span><div><IconButton label="最小化窗口" onClick={() => window.clay?.windowControl('minimize')}><Minus size={15} /></IconButton><IconButton label="最大化窗口" onClick={() => window.clay?.windowControl('maximize')}><Maximize2 size={13} /></IconButton><IconButton label="关闭窗口" className="window-close" onClick={() => window.clay?.windowControl('close')}><X size={16} /></IconButton></div></div>)}
     {sidebarOpen && <button className="sidebar-backdrop" aria-label="收起导航" onClick={() => setSidebarOpen(false)} />}
     <aside className={`sidebar ${sidebarOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-brand"><button className="brand-button" onClick={newChat} aria-label="Clay Chat 首页"><span className="brand-icon"><ClayMark small /></span><span>clay<span className="brand-light"> chat</span></span></button><IconButton label="收起侧边栏" className="collapse-button" onClick={() => { setSidebarCollapsed(true); setSidebarOpen(false); }}><PanelLeftClose size={17} /></IconButton></div>
@@ -291,7 +311,7 @@ export default function App({ initialState, initialKey }: { initialState: Worksp
       </motion.section></div> : <div className="chat-layout"><div className="message-scroll" ref={scroller.containerRef} onScroll={scroller.handleScroll} onWheel={scroller.markUserInput} onTouchStart={scroller.markUserInput} onKeyDown={event => { if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) scroller.markUserInput(); }} tabIndex={0} aria-label="对话内容"><div className="message-column">{messages.map((message, index) => <MessageView key={message.id} message={message} onCopy={() => void copy(message.content)} onRetry={retry} last={index === messages.length - 1} busy={busy} />)}</div></div>{scroller.showJumpControl && <button className="jump-button" onClick={() => scroller.scrollToBottom(true)}><ArrowDown size={15} />回到最新</button>}<div className="chat-composer"><Composer key={active.id} busy={busy} settings={state.settings} onSend={send} onStop={stop} onSettings={() => setSettingsOpen(true)} notify={notify} suggestion={null} /></div></div>}
       <footer className="workspace-footer"><span><span className="footer-dot" /> 为专注而设计 <span className="footer-separator">·</span> Open Claude UI</span><span>{window.clay ? <Monitor size={12} /> : <Globe2 size={12} />} {window.clay ? 'DESKTOP' : 'WEB'} <span className="version-label">v0.1</span></span></footer>
     </main>
-    {settingsOpen && <SettingsModal settings={state.settings} apiKey={apiKey} onClose={() => setSettingsOpen(false)} onSave={async (settings, key) => {
+    {settingsOpen && <SettingsModal settings={state.settings} apiKey={apiKey} titlebar={titlebarPref} onTitlebar={value => setState(previous => ({ ...previous, titlebar: value }))} onClose={() => setSettingsOpen(false)} onSave={async (settings, key) => {
       setState(previous => ({ ...previous, settings })); setApiKey(key);
       try { if (window.clay) await window.clay.saveSecret(key); else sessionStorage.setItem(KEY_STORAGE, key); }
       catch { notify('设置已保存。Key 无法持久保存，仅在当前会话中使用。'); return; }
