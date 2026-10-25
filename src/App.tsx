@@ -300,12 +300,15 @@ export default function App({ initialState, initialKey }: { initialState: Worksp
   }
   function togglePin(id: string) { setState(previous => ({ ...previous, conversations: previous.conversations.map(item => item.id === id ? { ...item, pinned: !item.pinned } : item) })); }
   function selectThread(id: string) { setState(previous => ({ ...previous, activeId: id })); setSidebarOpen(false); setSearchOpen(false); }
-  const titlebarPref = state.titlebar ?? 'auto';
-  const titlebar = !window.clay ? null : titlebarPref !== 'auto' ? titlebarPref : window.clay.platform === 'darwin' ? 'macos' : 'windows';
+  // ?titlebar=macos|windows 强制渲染标题栏，供录屏与截图在网页端复刻桌面外观
+  const titlebarParam = new URLSearchParams(location.search).get('titlebar');
+  const forcedTitlebar = titlebarParam === 'macos' || titlebarParam === 'mac' ? 'macos' : titlebarParam === 'windows' || titlebarParam === 'win' ? 'windows' : null;
+  const titlebarPref = forcedTitlebar ?? state.titlebar ?? 'auto';
+  const titlebar = (!window.clay && !forcedTitlebar) ? null : titlebarPref !== 'auto' ? titlebarPref : window.clay?.platform === 'darwin' ? 'macos' : 'windows';
   const listed = [...state.conversations].filter(item => filter === 'all' || item.pinned).sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt);
   const results = state.conversations.filter(item => item.title.toLowerCase().includes(query.toLowerCase()) || item.messages.some(message => message.content.toLowerCase().includes(query.toLowerCase()))).sort((a, b) => b.updatedAt - a.updatedAt);
-  return <div className={`app-shell ${window.clay ? 'desktop-shell' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-    {window.clay && (titlebar === 'macos'
+  return <div className={`app-shell ${titlebar ? 'desktop-shell' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    {titlebar && (titlebar === 'macos'
       ? <div className="desktop-titlebar mac" data-tauri-drag-region><div className="traffic-lights"><button className="tl tl-close" aria-label="关闭窗口" onClick={() => window.clay?.windowControl('close')}><X size={8} /></button><button className="tl tl-min" aria-label="最小化窗口" onClick={() => window.clay?.windowControl('minimize')}><Minus size={8} /></button><button className="tl tl-max" aria-label="最大化窗口" onClick={() => window.clay?.windowControl('maximize')}><Plus size={8} /></button></div><span className="titlebar-center"><ClayMark small /> Clay Chat</span></div>
       : <div className="desktop-titlebar" data-tauri-drag-region><span data-tauri-drag-region><ClayMark small /> Clay Chat</span><div><IconButton label="最小化窗口" onClick={() => window.clay?.windowControl('minimize')}><Minus size={15} /></IconButton><IconButton label="最大化窗口" onClick={() => window.clay?.windowControl('maximize')}><Maximize2 size={13} /></IconButton><IconButton label="关闭窗口" className="window-close" onClick={() => window.clay?.windowControl('close')}><X size={16} /></IconButton></div></div>)}
     {sidebarOpen && <button className="sidebar-backdrop" aria-label="收起导航" onClick={() => setSidebarOpen(false)} />}
@@ -332,7 +335,7 @@ export default function App({ initialState, initialKey }: { initialState: Worksp
         <div className="suggestion-grid">{suggestions.map(item => <button key={item.label} className="suggestion-card" onClick={() => setSuggestion({ text: item.prompt, id: Date.now() })}><span className={`suggestion-icon ${item.color}`}><item.icon size={20} strokeWidth={1.6} /></span><span className="suggestion-text"><strong>{item.label}</strong><span>{item.subtitle}</span></span><ArrowUp size={15} className="suggestion-arrow" /></button>)}</div>
         <p className="welcome-footnote"><span className="tiny-flower">✳</span> 少一点干扰，多一点专注。</p>
       </motion.section></div> : <div className="chat-layout"><div className="message-scroll scroll-fade-y" ref={scroller.containerRef} onScroll={scroller.handleScroll} onWheel={scroller.markUserInput} onTouchStart={scroller.markUserInput} onKeyDown={event => { if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) scroller.markUserInput(); }} tabIndex={0} aria-label="对话内容"><div className="message-column">{messages.map((message, index) => <MessageView key={message.id} message={message} onCopy={() => void copy(message.content)} onRetry={retry} last={index === messages.length - 1} busy={busy} />)}</div></div>{scroller.showJumpControl && <button className="jump-button" onClick={() => scroller.scrollToBottom(true)}><ArrowDown size={15} />回到最新</button>}<div className="chat-composer"><Composer key={active.id} busy={busy} settings={state.settings} onSend={send} onStop={stop} onSettings={() => setSettingsOpen(true)} notify={notify} suggestion={null} /></div></div>}
-      <footer className="workspace-footer"><span><span className="footer-dot" /> 为专注而设计 <span className="footer-separator">·</span> Open Claude UI</span><span>{window.clay ? <Monitor size={12} /> : <Globe2 size={12} />} {window.clay ? 'DESKTOP' : 'WEB'} <span className="version-label">v0.1</span></span></footer>
+      <footer className="workspace-footer"><span><span className="footer-dot" /> 为专注而设计 <span className="footer-separator">·</span> Open Claude UI</span><span>{titlebar ? <Monitor size={12} /> : <Globe2 size={12} />} {titlebar ? 'DESKTOP' : 'WEB'} <span className="version-label">v0.1</span></span></footer>
     </main>
     {settingsOpen && <SettingsModal settings={state.settings} apiKey={apiKey} titlebar={titlebarPref} onTitlebar={value => setState(previous => ({ ...previous, titlebar: value }))} onClose={() => setSettingsOpen(false)} onSave={async (settings, key) => {
       setState(previous => ({ ...previous, settings })); setApiKey(key);

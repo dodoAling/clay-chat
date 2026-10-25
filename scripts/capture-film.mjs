@@ -152,7 +152,7 @@ try {
   const page = await context.newPage();
   page.on('pageerror', e => console.warn('  ⚠', e.message));
   await page.clock.install();
-  await page.goto(app.url);
+  await page.goto(`${app.url}?titlebar=macos`);
   await page.getByRole('heading', { name: /给想法一点/ }).waitFor();
 
   const want = id => !only.length || only.some(p => id.startsWith(p));
