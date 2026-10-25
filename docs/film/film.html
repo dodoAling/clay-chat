@@ -1,0 +1,302 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Clay Chat 宣传短片舞台</title>
+<!--
+  宣传短片的画布渲染器：由 scripts/render-film.mjs 逐帧驱动出母版 MP4。
+  🔴 界面一像素都不手画 —— 窗口里的画面全部是 docs/film/clips/ 的实机录屏；
+     画布上自己画的只有镜头语言：字、光圈、窗口的圆角与投影、陶土底。
+  字幕只复述 README 里已有的产品事实，不新造卖点。
+-->
+<style>html,body{margin:0;background:#16140f;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+/* ---------- 素材 ----------
+   🔴 不用 <video>：无头浏览器对它的 seek 只发事件不解码，currentTime 恒为 0。
+   render-film.mjs 先用 ffmpeg 把录屏解成逐帧 PNG（.artifacts/film-frames/），
+   这里按帧号取 <img> —— 帧精确，也不依赖浏览器的编解码。 */
+const CLIP_IDS = ['chat', 'browse'];
+const FRAME_DIR = '../../.artifacts/film-frames';
+const assets = { clicks: {}, icon: null };
+
+const FONT = "'Segoe UI','Microsoft YaHei',system-ui,sans-serif";
+const SERIF = "Georgia,'Noto Serif SC','Source Han Serif SC','Songti SC',serif";
+const ACCENT = '#d28c6e';
+const INK = '#efe9df';
+const DIM = '#a89e8e';
+
+function loadImage(src) {
+  return new Promise((ok, fail) => {
+    const i = new Image();
+    i.onload = () => ok(i); i.onerror = () => fail(new Error('贴图加载失败: ' + src));
+    i.src = src;
+  });
+}
+
+async function load() {
+  assets.icon = await loadImage('../../desktop/src-tauri/icons/icon.png');
+  for (const id of CLIP_IDS) {
+    assets.clicks[id] = await (await fetch(`clips/${id}.json`)).json();
+  }
+  await document.fonts.ready;
+}
+
+/* 某段录屏某一时刻的那一帧（对齐到帧起点）。小容量 LRU。 */
+const frameCache = new Map();
+function clipFrame(id, t) {
+  const meta = assets.clicks[id];
+  const i = Math.min(meta.frames - 1, Math.floor(Math.max(0, t) * meta.fps));
+  const key = `${id}/${i}`;
+  let p = frameCache.get(key);
+  if (!p) {
+    p = loadImage(`${FRAME_DIR}/${id}/${String(i).padStart(5, '0')}.png`);
+    frameCache.set(key, p);
+    if (frameCache.size > 12) frameCache.delete(frameCache.keys().next().value);
+  }
+  return p;
+}
+
+/* ---------- 时间轴 ---------- */
+/* 每段：clip = 播哪段录屏（场景内时间线性映射到录屏时间）。 */
+const SCENES = [
+  { id: 'title',  from: 0,    to: 2.6,  clip: null },
+  { id: 'chat',   from: 2.6,  to: 14.0, clip: 'chat' },
+  { id: 'browse', from: 14.0, to: 23.0, clip: 'browse' },
+  { id: 'end',    from: 23.0, to: 26.4, clip: null },
+];
+const DUR = SCENES.at(-1).to;
+const COVER_T = 8.2; /* 封面帧：流式回复铺开的时刻 */
+
+const sceneAt = t => SCENES.find(s => t >= s.from && t < s.to) ?? SCENES.at(-1);
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const easeOut = v => 1 - Math.pow(1 - clamp01(v), 3);
+const easeInOut = v => { v = clamp01(v); return v < .5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2; };
+/* 场景边缘淡入淡出（0.45s） */
+const sceneAlpha = (s, t) => clamp01((t - s.from) / .45) * clamp01((s.to - t) / .45);
+
+/* ---------- 背景：暖陶深底 ---------- */
+let seed = 20261025;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const DOTS = Array.from({ length: 110 }, () => ({ x: rnd(), y: rnd(), r: .8 + rnd() * 2.2, a: .04 + rnd() * .16, d: .3 + rnd() * .9 }));
+
+function background(t) {
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, '#221e17'); g.addColorStop(.55, '#181510'); g.addColorStop(1, '#100e0a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const glow = ctx.createRadialGradient(W * .78, H * .16, 0, W * .78, H * .16, 900);
+  glow.addColorStop(0, 'rgba(210,140,110,.16)'); glow.addColorStop(1, 'rgba(210,140,110,0)');
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+  const glow2 = ctx.createRadialGradient(W * .1, H * .95, 0, W * .1, H * .95, 700);
+  glow2.addColorStop(0, 'rgba(160,175,144,.08)'); glow2.addColorStop(1, 'rgba(160,175,144,0)');
+  ctx.fillStyle = glow2; ctx.fillRect(0, 0, W, H);
+  for (const d of DOTS) {
+    ctx.globalAlpha = d.a;
+    ctx.fillStyle = '#e8dcc8';
+    ctx.beginPath();
+    ctx.arc(d.x * W + Math.sin(t * .3 + d.y * 9) * 6 * d.d, d.y * H, d.r, 0, 7);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const v = ctx.createRadialGradient(W / 2, H / 2, H * .42, W / 2, H / 2, H * 1.05);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.4)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/* 窗口里的实机录屏：圆角 + 投影 + 一圈细描边。src 是该帧的 <img>。 */
+function drawWindow(img, r, scale = 1, alpha = 1) {
+  const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+  const w = r.w * scale, h = r.h * scale;
+  const x = cx - w / 2, y = cy - h / 2;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.shadowColor = 'rgba(0,0,0,.65)'; ctx.shadowBlur = 70; ctx.shadowOffsetY = 34;
+  ctx.fillStyle = '#1d1b16';
+  roundRect(x, y, w, h, 18); ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  ctx.save();
+  roundRect(x, y, w, h, 18); ctx.clip();
+  const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+  ctx.drawImage(img, x + (w - img.naturalWidth * s) / 2, y + (h - img.naturalHeight * s) / 2, img.naturalWidth * s, img.naturalHeight * s);
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(255,255,255,.13)'; ctx.lineWidth = 1.5;
+  roundRect(x, y, w, h, 18); ctx.stroke();
+  ctx.restore();
+  return { x, y, w, h };
+}
+
+/* 点击光圈：在点击时刻炸开一圈，带一行小标签。 */
+function drawClicks(clipId, clipT, win) {
+  const meta = assets.clicks[clipId];
+  if (!meta) return;
+  for (const c of meta.clicks) {
+    const dt = clipT - c.t;
+    if (dt < -0.12 || dt > 0.9) continue;
+    const x = win.x + c.x * win.w, y = win.y + c.y * win.h;
+    const p = clamp01((dt + 0.12) / 0.5);
+    const rad = 14 + easeOut(p) * 46;
+    ctx.globalAlpha = (1 - p) * .9;
+    ctx.strokeStyle = ACCENT; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, 7); ctx.stroke();
+    ctx.globalAlpha = (1 - p) * .28;
+    ctx.fillStyle = ACCENT;
+    ctx.beginPath(); ctx.arc(x, y, rad * .55, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+    if (dt > 0.05 && dt < 0.8 && c.label) {
+      const a = clamp01((dt - 0.05) / 0.15) * clamp01((0.8 - dt) / 0.15);
+      ctx.globalAlpha = a;
+      ctx.font = `600 20px ${FONT}`;
+      const tw = ctx.measureText(c.label).width;
+      ctx.fillStyle = 'rgba(24,20,15,.92)';
+      roundRect(x + 20, y - 46, tw + 26, 34, 9); ctx.fill();
+      ctx.strokeStyle = 'rgba(210,140,110,.55)'; ctx.lineWidth = 1;
+      roundRect(x + 20, y - 46, tw + 26, 34, 9); ctx.stroke();
+      ctx.fillStyle = '#f0d9c8'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+      ctx.fillText(c.label, x + 33, y - 28);
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
+function caption(lines, alpha, local) {
+  const tx = 116, ty = 300, tw = 520;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  for (const [i, l] of lines.entries()) {
+    const p = easeOut(clamp01((local - l.delay) / .5));
+    if (p <= 0) continue;
+    const dy = (1 - p) * 26;
+    ctx.globalAlpha = alpha * p;
+    if (l.kind === 'kicker') {
+      ctx.fillStyle = ACCENT; ctx.font = `600 24px ${FONT}`; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(l.text, tx, ty - 74 + dy);
+    } else if (l.kind === 'title') {
+      ctx.fillStyle = INK; ctx.font = `700 58px ${SERIF}`;
+      wrap(l.text, tx, ty + dy, tw, 70);
+    } else {
+      ctx.fillStyle = DIM; ctx.font = `400 30px ${FONT}`;
+      wrap(l.text, tx, ty + 92 + i * 54 + dy, tw, 42);
+    }
+  }
+  ctx.restore();
+}
+
+function wrap(text, x, y, maxW, lh) {
+  let line = '', yy = y;
+  for (const ch of text) {
+    if (ctx.measureText(line + ch).width > maxW && line) { ctx.fillText(line, x, yy); line = ch; yy += lh; }
+    else line += ch;
+  }
+  ctx.fillText(line, x, yy);
+  return yy;
+}
+
+/* ---------- 场景 ---------- */
+function drawTitle(t) {
+  const s = SCENES[0], local = t - s.from, a = sceneAlpha(s, t);
+  const pop = easeOut(clamp01(local / .7));
+  const iconSize = 150;
+  ctx.save();
+  ctx.globalAlpha = a * pop;
+  const bounce = 1 + .18 * (1 - easeOut(clamp01(local / .55)));
+  const iw = iconSize * bounce;
+  ctx.drawImage(assets.icon, W / 2 - iw / 2, H * .3 - iw / 2, iw, iw);
+  ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  ctx.font = `700 108px ${SERIF}`;
+  ctx.globalAlpha = a * easeOut(clamp01((local - .15) / .6));
+  ctx.fillText('clay chat', W / 2, H * .3 + 118);
+  ctx.font = `500 40px ${FONT}`; ctx.fillStyle = '#e6cdb8';
+  ctx.globalAlpha = a * easeOut(clamp01((local - .45) / .6));
+  ctx.fillText('把「Claude 桌面端」做成你自己的', W / 2, H * .3 + 190);
+  ctx.font = `400 27px ${FONT}`; ctx.fillStyle = DIM;
+  ctx.globalAlpha = a * easeOut(clamp01((local - .7) / .6));
+  ctx.fillText('自带 Key · 对话不出本机 · MIT 开源', W / 2, H * .3 + 252);
+  ctx.restore();
+}
+
+function drawEnd(t) {
+  const s = SCENES.at(-1), local = t - s.from, a = sceneAlpha(s, t) * clamp01(local / .01 + 1);
+  const pop = easeOut(clamp01(local / .6));
+  ctx.save();
+  ctx.globalAlpha = a * pop;
+  const iw = 118;
+  ctx.drawImage(assets.icon, W / 2 - iw / 2, H * .26 - iw / 2, iw, iw);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = INK; ctx.font = `700 66px ${SERIF}`;
+  ctx.globalAlpha = a * easeOut(clamp01((local - .2) / .6));
+  ctx.fillText('把 Claude 的体验，装进你的设备', W / 2, H * .26 + 104);
+  ctx.font = `500 34px ${FONT}`; ctx.fillStyle = ACCENT;
+  ctx.globalAlpha = a * easeOut(clamp01((local - .45) / .6));
+  ctx.fillText('MIT 开源 · 完全免费', W / 2, H * .26 + 176);
+  ctx.font = `400 28px ${FONT}`; ctx.fillStyle = DIM;
+  ctx.globalAlpha = a * easeOut(clamp01((local - .7) / .6));
+  ctx.fillText('github.com/dodoAling/clay-chat', W / 2, H * .26 + 232);
+  ctx.restore();
+}
+
+/* ---------- 渲染一帧 ---------- */
+async function paint(t) {
+  const s = sceneAt(t);
+  /* 前后两个场景在交界 0.45s 内叠化：两段的帧图都要取到。 */
+  const prev = SCENES[SCENES.indexOf(s) - 1];
+  const inFade = prev && t - s.from < .45;
+  const imgs = {};
+  if (inFade && prev.clip) imgs[prev.clip] = await clipFrame(prev.clip, prev.to - prev.from - 1 / FPS);
+  if (s.clip) imgs[s.clip] = await clipFrame(s.clip, t - s.from);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  background(t);
+  if (inFade) paintScene(prev, Math.min(t, prev.to - 1e-4), imgs[prev.clip]);
+  paintScene(s, t, imgs[s.clip]);
+}
+
+function paintScene(s, t, img) {
+  if (s.id === 'title') drawTitle(t);
+  else if (s.id === 'end') drawEnd(t);
+  else {
+    const clipT = Math.min(t - s.from, assets.clicks[s.clip].duration - .001);
+    const local = t - s.from;
+    const a = sceneAlpha(s, t);
+    const rect = { x: 640, y: 176, w: 1180, h: 737 };
+    const win = drawWindow(img, rect, 1, a);
+    if (a > .02) drawClicks(s.clip, clipT, win);
+    if (s.id === 'chat') {
+      caption([
+        { kind: 'kicker', text: '对话', delay: .2 },
+        { kind: 'title', text: '像在用 Claude 桌面端', delay: .35 },
+        { kind: 'line', text: '流式回复 · Markdown · 代码块一键复制', delay: 3.4 },
+        { kind: 'line', text: '没有 Key 也能玩：内置离线演示', delay: 7.2 },
+      ], a, local);
+    } else {
+      caption([
+        { kind: 'kicker', text: '工作区', delay: .2 },
+        { kind: 'title', text: '明暗双主题 · 会话全本地', delay: .35 },
+        { kind: 'line', text: '搜索 · 收藏 · 导出 Markdown', delay: 2.6 },
+        { kind: 'line', text: '自带 Key：OpenAI 兼容 · Claude', delay: 5.4 },
+      ], a, local);
+    }
+  }
+}
+
+window.__film = {
+  w: W, h: H, fps: FPS, frames: Math.round(DUR * FPS), cover: Math.round(COVER_T * FPS), ready: false,
+  async frame(i) { await paint(i / FPS); return cv.toDataURL('image/png').split(',')[1]; },
+  async still(t) { await paint(t); return cv.toDataURL('image/png').split(',')[1]; },
+};
+
+load().then(() => {
+  window.__film.ready = true;
+  document.documentElement.dataset.filmReady = '1';
+}).catch(e => { document.documentElement.dataset.filmError = String(e); });
+</script>

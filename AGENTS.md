@@ -7,3 +7,4 @@
 - `src/vendor/cds/` 来自 Open Claude UI；保留上游 MIT 许可，主题使用温暖的陶土色和轻灰表面，支持明暗主题及中文输入法保护。
 - 前端修改执行 `npm run build`，交互或代理修改执行相关 `npm test` / `npm run test:ui`。Rust 逻辑修改执行 `cargo test --manifest-path desktop/src-tauri/Cargo.toml`；原生行为修改构建后执行 `npm run test:desktop`。
 - 原生 UI 测试使用隔离数据目录和模拟模型接口，避免真实付费请求。分发构建使用 `npm run package:desktop`。
+- 宣传素材流水线：`npm run film:clips`（假时钟确定性录屏 → `docs/film/clips/`），`npm run film`（逐帧渲染短片 + 封面 + GIF + 海报 → `docs/media/`）。短片/海报画布只画镜头语言，界面一律用实机录屏与截图，字幕只复述 README 事实。

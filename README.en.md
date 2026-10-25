@@ -18,7 +18,13 @@ What you can do with it:
 
 ## Screenshots
 
-![Desktop conversation in the dark theme with Markdown and a code block](docs/media/conversation-desktop-dark.png)
+[![Product film cover](docs/media/clay-chat-tour-cover.png)](docs/media/clay-chat-tour-1080p.mp4)
+
+<p align="center">
+  <a href="docs/media/clay-chat-tour-1080p.mp4">▶ Watch the 26-second product film</a> ·
+  <a href="docs/media/poster-1920x1080.png">Poster</a> ·
+  <a href="docs/media/clay-chat-tour.gif">GIF preview</a>
+</p>
 
 | Light theme | Dark theme |
 | --- | --- |
@@ -104,7 +110,8 @@ web/                Same-origin web service and the dual-protocol proxy
 desktop/src-tauri/  Tauri 2, Rust model requests, local storage and system credentials
 scripts/            Web and native desktop verification
 tests/              Web proxy and SSE boundary tests
-docs/media/         README screenshots
+docs/media/         README screenshots, film and poster
+docs/film/          Film canvas and poster layouts (npm run film)
 licenses/           Upstream licenses
 ```
 

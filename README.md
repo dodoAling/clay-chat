@@ -18,7 +18,13 @@
 
 ## 界面截图
 
-![深色主题下的桌面对话界面：Markdown 回复与代码块](docs/media/conversation-desktop-dark.png)
+[![产品短片封面](docs/media/clay-chat-tour-cover.png)](docs/media/clay-chat-tour-1080p.mp4)
+
+<p align="center">
+  <a href="docs/media/clay-chat-tour-1080p.mp4">▶ 观看 26 秒产品短片</a> ·
+  <a href="docs/media/poster-1920x1080.png">宣传海报</a> ·
+  <a href="docs/media/clay-chat-tour.gif">GIF 预览</a>
+</p>
 
 | 浅色主题 | 深色主题 |
 | --- | --- |
@@ -104,7 +110,8 @@ web/                网页同源服务及双协议代理
 desktop/src-tauri/  Tauri 2、Rust 模型请求、本地数据与系统凭据
 scripts/            网页和原生桌面验证
 tests/              网页代理与 SSE 边界测试
-docs/media/         README 截图
+docs/media/         README 截图、短片与海报
+docs/film/          短片画布与海报版式（npm run film）
 licenses/           上游许可证
 ```
 

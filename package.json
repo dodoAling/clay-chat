@@ -19,6 +19,8 @@
     "test:ui": "node scripts/verify-ui.mjs",
     "test:desktop": "node scripts/verify-desktop.mjs",
     "screenshots": "node scripts/capture-readme-media.mjs",
+    "film:clips": "node scripts/capture-film.mjs",
+    "film": "node scripts/render-film.mjs",
     "tauri": "tauri"
   },
   "dependencies": {

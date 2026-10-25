@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Clay Chat 海报</title>
+<!-- 宣传海报：scripts/render-film.mjs 按 1920×1080 与 ?v=1 1080×1440 两种尺寸截图。
+     窗口图全部用 docs/media 的实机截图，海报只画字、底和角标。 -->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    background:
+      radial-gradient(1100px 640px at 74% 18%, rgba(210,140,110,.18), rgba(210,140,110,0) 62%),
+      radial-gradient(760px 560px at 8% 92%, rgba(160,175,144,.10), rgba(160,175,144,0) 60%),
+      linear-gradient(158deg, #221e17 0%, #181510 55%, #0f0d09 100%);
+    color: #efe9df;
+    position: relative;
+    overflow: hidden;
+  }
+  body.h { width: 1920px; height: 1080px; }
+  body.v { width: 1080px; height: 1440px; }
+  .dot { position: absolute; background: #e8dcc8; border-radius: 50%; }
+
+  .brand { position: absolute; left: 66px; top: 42px; display: flex; align-items: center; gap: 18px; }
+  .brand img { width: 64px; height: 64px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .brand .name { font-family: Georgia, "Noto Serif SC", "Source Han Serif SC", serif; font-size: 46px; font-weight: 700; letter-spacing: .5px; }
+  .brand .name i { font-style: normal; color: #d28c6e; }
+  .site { position: absolute; right: 66px; top: 58px; font-size: 24px; color: #a89e8e; text-align: right; }
+  .site b { color: #efe9df; font-weight: 600; font-size: 27px; }
+
+  .headline { position: absolute; left: 50%; transform: translateX(-50%);
+              font-family: Georgia, "Noto Serif SC", "Source Han Serif SC", serif;
+              font-weight: 700; white-space: nowrap; letter-spacing: 1px; }
+  .headline i { font-style: normal; color: #d28c6e; }
+  .headsub { position: absolute; left: 50%; transform: translateX(-50%);
+             color: #b3a794; font-weight: 500; white-space: nowrap; }
+
+  .win { position: absolute; border-radius: 14px; display: block;
+         box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 30px 80px rgba(0,0,0,.55); }
+  .hero { z-index: 3;
+          box-shadow: 0 0 0 1px rgba(255,255,255,.16), 0 0 0 4px rgba(210,140,110,.18),
+                      0 50px 130px rgba(0,0,0,.72), 0 0 90px rgba(210,140,110,.14); }
+  .side { z-index: 2; }
+  .phone { position: absolute; z-index: 4; padding: 6px; border-radius: 26px;
+           background: linear-gradient(160deg, #33302a, #1a1712 60%, #13110d);
+           box-shadow: 0 0 0 1px rgba(255,255,255,.16), inset 0 0 0 1px rgba(255,255,255,.06),
+                       0 30px 84px rgba(0,0,0,.66), 0 0 54px rgba(210,140,110,.16); }
+  .phone img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; display: block; }
+
+  .deal { position: absolute; z-index: 10; display: flex; align-items: center; gap: 16px;
+          padding: 16px 30px; transform: rotate(-2deg);
+          background: linear-gradient(135deg, rgba(46,36,26,.97), rgba(30,24,18,.97));
+          border: 2px solid rgba(210,140,110,.7); border-radius: 20px;
+          box-shadow: 0 26px 70px rgba(0,0,0,.7), 0 0 80px rgba(210,140,110,.3),
+                      inset 0 1px 0 rgba(240,215,190,.25); }
+  .deal .now { font-size: 58px; font-weight: 800; color: #e8b48f; line-height: 1;
+               text-shadow: 0 0 30px rgba(210,140,110,.45); white-space: nowrap; }
+  .deal .tag { font-size: 22px; font-weight: 800; color: #1c1611;
+               background: linear-gradient(135deg, #efd0b2, #d28c6e);
+               padding: 7px 13px; border-radius: 9px; transform: rotate(2deg); white-space: nowrap; }
+
+  .foot { position: absolute; left: 66px; right: 66px; bottom: 34px; z-index: 12;
+          display: flex; align-items: center; gap: 26px;
+          border-top: 1px solid rgba(255,255,255,.12); padding-top: 20px; }
+  .wx { height: 92px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .how .l1 { font-size: 26px; font-weight: 700; white-space: nowrap; }
+  .how .l1 b { color: #e8b48f; }
+  .how .l2 { margin-top: 8px; font-size: 21px; color: #a89e8e; display: flex; align-items: center; gap: 10px; }
+  .how .l2 b { color: #e8b48f; font-weight: 700; }
+  .plat { display: inline-flex; align-items: center; gap: 7px; margin-right: 12px; }
+  .plat svg { width: 21px; height: 21px; display: block; }
+
+  /* 竖版布局 */
+  body.v .brand { left: 48px; top: 36px; }
+  body.v .site { display: none; }
+  body.v .foot { left: 44px; right: 44px; bottom: 28px; gap: 20px; }
+  body.v .wx { height: 78px; }
+  body.v .how .l1 { font-size: 22px; }
+  body.v .how .l2 { font-size: 18px; }
+</style>
+</head>
+<body>
+  <div class="brand">
+    <img src="../../desktop/src-tauri/icons/icon.png" alt="">
+    <div class="name">clay <i>chat</i></div>
+  </div>
+  <div class="headline" id="headline">把「<i>Claude 桌面端</i>」做成你自己的</div>
+  <div class="headsub" id="headsub">流式回复 · Markdown · 自带 Key · 对话不出本机 · 明暗双主题</div>
+  <div class="site">开源仓库<br><b>github.com/dodoAling/clay-chat</b></div>
+
+  <img class="win side" id="welcome" src="../media/welcome-desktop.png" alt="">
+  <img class="win hero" id="hero" src="../media/conversation-desktop-dark.png" alt="">
+  <div class="phone" id="phone"><img src="../media/welcome-mobile-dark.png" alt=""></div>
+
+  <div class="deal" id="deal">
+    <span class="now">开源免费</span>
+    <span class="tag">MIT · 自带 Key</span>
+  </div>
+
+  <div class="foot">
+    <img class="wx" src="../media/wechat-mp-qr.png" alt="">
+    <div class="how">
+      <div class="l1">微信 <b>dodoaling</b> · 公众号 <b>DodoAling</b></div>
+      <div class="l2">
+        <span class="plat"><svg viewBox="0 0 24 24" fill="#4dabf5"><path d="M0,0H11.377V11.372H0ZM12.623,0H24V11.372H12.623ZM0,12.623H11.377V24H0Zm12.623,0H24V24H12.623"/></svg><span>Windows 桌面端</span></span>
+        <span class="plat"><svg viewBox="0 0 24 24" fill="#a0af90"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm7 9h-3a15.6 15.6 0 0 0-1.2-4.8A8 8 0 0 1 19 11zM12 4a14.4 14.4 0 0 1 2 7h-4a14.4 14.4 0 0 1 2-7zM5 11a8 8 0 0 1 4.2-4.8A15.6 15.6 0 0 0 8 11zm4.2 6.8A8 8 0 0 1 5 13h3a15.6 15.6 0 0 0 1.2 4.8zM12 20a14.4 14.4 0 0 1-2-7h4a14.4 14.4 0 0 1-2 7zm2.8-2.2A15.6 15.6 0 0 0 16 13h3a8 8 0 0 1-4.2 4.8z"/></svg><span>网页版</span></span>
+        自带 Key，<b>对话只存在你的设备上</b>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const vertical = new URLSearchParams(location.search).has('v');
+  document.body.className = vertical ? 'v' : 'h';
+
+  const L = vertical ? {
+    headline: { top: 150, size: 58 }, headsub: { top: 236, size: 25 },
+    hero:    { left: 80,  top: 320,  w: 920,  rotate: '-.7deg' },
+    welcome: { left: 40,  top: 980,  w: 520,  rotate: '-2.2deg' },
+    phone:   { left: 770, top: 940,  w: 240,  h: 500, rotate: '2deg' },
+    deal:    { left: 360, top: 850 },
+  } : {
+    headline: { top: 46,  size: 56 }, headsub: { top: 140, size: 24 },
+    hero:    { left: 500, top: 236,  w: 1020, rotate: '-.8deg' },
+    welcome: { left: 66,  top: 420,  w: 560,  rotate: '-2.4deg' },
+    phone:   { left: 1630, top: 420, w: 200,  h: 430, rotate: '2.2deg' },
+    deal:    { left: 830, top: 810 },
+  };
+
+  const el = id => document.getElementById(id);
+  el('headline').style.top = L.headline.top + 'px';
+  el('headline').style.fontSize = L.headline.size + 'px';
+  el('headsub').style.top = L.headsub.top + 'px';
+  el('headsub').style.fontSize = L.headsub.size + 'px';
+  for (const [id, cfg] of [['hero', L.hero], ['welcome', L.welcome]]) {
+    const e = el(id);
+    e.style.left = cfg.left + 'px'; e.style.top = cfg.top + 'px';
+    e.style.width = cfg.w + 'px'; e.style.transform = `rotate(${cfg.rotate})`;
+  }
+  const p = el('phone');
+  p.style.left = L.phone.left + 'px'; p.style.top = L.phone.top + 'px';
+  p.style.width = L.phone.w + 'px'; p.style.height = L.phone.h + 'px';
+  p.style.transform = `rotate(${L.phone.rotate})`;
+  const d = el('deal');
+  d.style.left = L.deal.left + 'px'; d.style.top = L.deal.top + 'px';
+
+  /* 确定的星点底，与短片同一种土色。 */
+  let seed = 20261025;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('i');
+    s.className = 'dot';
+    const sz = 1 + rnd() * 2.2;
+    s.style.cssText = `left:${rnd() * innerWidth}px;top:${rnd() * innerHeight}px;width:${sz}px;height:${sz}px;opacity:${.06 + rnd() * .3}`;
+    document.body.appendChild(s);
+  }
+</script>
+</body>
+</html>
