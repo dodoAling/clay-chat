@@ -6,14 +6,15 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web-9aa7bd)](https://github.com/dodoAling/clay-chat)
 [![License](https://img.shields.io/badge/license-MIT-7d8f69)](LICENSE)
 
-Clay Chat 是一个安静的 AI 对话工作台，同时提供网页版与 Windows 桌面端。两端共用同一套 React + TypeScript + Vite 界面，主题、按钮、动效与滚动锁定复用自 [Open Claude UI](https://github.com/Caho1/open-claude-ui)。
+把「Claude 桌面端」做成你能自己掌控的样子。Clay Chat 复用了 Claude 同款的 [Open Claude UI](https://github.com/Caho1/open-claude-ui) 界面、动效与手感，而模型、密钥和数据完全由你持有——接 OpenAI 兼容服务或 Claude API，对话全部留在本机。
 
 它能做什么：
 
-- **接上你自己的模型** —— 支持任意 OpenAI 兼容的 `/chat/completions` 服务和 Claude `/messages` 接口；流式输出、多轮上下文、停止与重新生成开箱即用。
-- **没有 Key 也能先体验** —— 首次进入是明确标注的离线演示，播放预设回复，不调用大模型。
-- **一切留在本地** —— 对话、收藏与搜索只存在这台设备上；网页端 API Key 只保存在当前标签页的 sessionStorage，桌面端使用 Windows 凭据管理器。
-- **按你的习惯工作** —— 文本/源码附件、Markdown 渲染与一键复制代码、明暗主题、对话导出，以及中文输入法安全的快捷键。
+- **像在用 Claude 桌面端** —— 流式回复、Markdown 排版、代码块一键复制、随写随读的滚动锁定，第一眼就是熟悉的感觉。
+- **自带 Key，不被订阅绑住** —— 任意 OpenAI 兼容的 `/chat/completions` 或 Anthropic `/messages`，云端服务、本地 Ollama 都接。
+- **对话只存在你的设备上** —— 没有账号体系、没有云同步；桌面端 Key 进 Windows 凭据管理器，网页端 Key 只活在标签页里。
+- **没有 Key 也能先玩** —— 内置明确标注的离线演示，开箱就能看到完整界面。
+- **Windows 原生桌面端 + 网页版** —— Tauri 2 + Rust 单文件几 MB；同一套界面也能跑在浏览器里。
 
 ## 界面截图
 
@@ -69,6 +70,8 @@ npm run build:desktop
 - **Claude API** —— Anthropic `/messages` 接口，携带 `anthropic-version: 2023-06-01`。
 
 填入接口地址、模型 ID 与 API Key 后即可发送消息。接口地址可带 `/v1`，也接受完整端点路径。可选系统提示词随连接生效。
+
+Clay Chat 是第三方客户端，与 Anthropic 无关联；相关名称与商标归各自所有者。
 
 ## 功能
 

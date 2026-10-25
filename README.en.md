@@ -6,14 +6,15 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web-9aa7bd)](https://github.com/dodoAling/clay-chat)
 [![License](https://img.shields.io/badge/license-MIT-7d8f69)](LICENSE)
 
-Clay Chat is a quiet AI conversation workspace for the web and the Windows desktop. Both ends share one React + TypeScript + Vite interface, with the theme, buttons, motion presets, and scroll pinning vendored from [Open Claude UI](https://github.com/Caho1/open-claude-ui).
+The Claude desktop experience, finally under your control. Clay Chat rebuilds the familiar Claude look, motion, and feel on top of [Open Claude UI](https://github.com/Caho1/open-claude-ui) — while the model, keys, and data stay entirely yours. Plug in an OpenAI-compatible service or the Claude API, and every conversation stays on your machine.
 
 What you can do with it:
 
-- **Chat with your own model** — connect any OpenAI-compatible `/chat/completions` service or the Claude `/messages` API; streaming, multi-turn context, stop and regenerate are built in.
-- **Start without a key** — the first launch runs a clearly labeled offline demo that streams preset replies without calling a model.
-- **Keep everything local** — conversations, favorites, and search stay on this device; the API key lives in the tab's sessionStorage on the web and in the Windows Credential Manager on the desktop.
-- **Work the way you like** — text/source attachments, Markdown rendering with one-click code copy, dark and light themes, conversation export, and CJK input-method-safe shortcuts.
+- **Feels like Claude's desktop app** — streaming replies, Markdown, one-click code copy, and read-as-it-writes scroll pinning; it looks familiar from the first second.
+- **Bring your own key, skip the subscription** — any `/chat/completions` endpoint or Anthropic `/messages`, from hosted providers down to local Ollama.
+- **Conversations never leave the device** — no accounts, no sync; the desktop stores your key in the Windows Credential Manager, the web keeps it in the tab's sessionStorage.
+- **Works before you add a key** — a clearly labeled offline demo plays preset replies out of the box.
+- **Native Windows desktop + web** — a few-MB single binary on Tauri 2 + Rust; the same interface runs in the browser.
 
 ## Screenshots
 
@@ -69,6 +70,8 @@ Open **Settings** and choose a connection:
 - **Claude API** — Anthropic `/messages` with `anthropic-version: 2023-06-01`.
 
 Enter the base URL, model ID, and API key, then send a message. Base URLs may include `/v1`; complete endpoint paths are also accepted. An optional system prompt is applied per connection.
+
+Clay Chat is a third-party client and is not affiliated with Anthropic; names and trademarks belong to their respective owners.
 
 ## Features
 
